@@ -1,6 +1,6 @@
 local map = vim.keymap.set
 
-vim.g.mapleader = "."
+vim.g.mapleader = ","
 
 --- Wrapper for commands
 local cmdWrap = function(command)

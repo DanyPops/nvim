@@ -6,7 +6,7 @@ opt.showmode = false
 -- Centering
 opt.scrolloff = 999
 
-opt.clipboard = "unnamed"
+opt.clipboard = "unnamedplus"
 
 -- Indenting
 opt.expandtab = true

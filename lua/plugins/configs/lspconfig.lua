@@ -58,13 +58,18 @@ lspconfig.lua_ls.setup {
   capabilities = capabilities,
   settings = {
     Lua = {
-      diagnostics = { globals = { "vim" } },
+      diagnostics = {
+        globals = { "vim" },
+      },
+      workspace = {
+        library = vim.api.nvim_get_runtime_file("", true),
+      },
     },
   },
 }
 
 -- setup multiple servers with same default options
-local servers = { "tsserver", "html", "cssls", "gopls" }
+local servers = { "tsserver", "html", "cssls", "gopls", "zls"}
 
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
