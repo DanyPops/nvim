@@ -181,6 +181,7 @@ local plugins = {
   -- Noice command line
   {
     "folke/noice.nvim",
+    enabled = false,
     event = "VeryLazy",
     opts = {},
     dependencies = {
