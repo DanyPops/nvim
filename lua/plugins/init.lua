@@ -5,8 +5,14 @@ local plugins = {
   -- colorscheme
   {
     "ellisonleao/gruvbox.nvim",
+    lazy = false,
+    priority = 1000,
   },
-
+  {
+    "loctvl842/monokai-pro.nvim",
+    lazy = false,
+    priority = 1000,
+  },
   -- icons
   {
     "nvim-tree/nvim-web-devicons",
@@ -92,17 +98,9 @@ local plugins = {
 
   -- LSP installer
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     event = { "BufReadPre", "BufNewFile" },
     priority = 1000,
-    dependencies = {
-      {
-        "williamboman/mason-lspconfig.nvim",
-        config = function()
-          require("mason-lspconfig").setup()
-        end,
-      },
-    },
     build = ":MasonUpdate",
     cmd = { "Mason", "MasonInstall" },
     config = function()
@@ -116,6 +114,19 @@ local plugins = {
     event = { "BufReadPre", "BufNewFile" },
     config = function()
       require "plugins.configs.lspconfig"
+    end,
+  },
+  {
+    "mason-org/mason-lspconfig.nvim",
+    dependencies = {
+      "mason-org/mason.nvim",
+      "neovim/nvim-lspconfig",
+    },
+    config = function()
+      require("mason-lspconfig").setup {
+        automatic_enable = false,
+        ensure_installed = { "gopls", "lua_ls", "ts_ls", "rust_analyzer" },
+      }
     end,
   },
 
