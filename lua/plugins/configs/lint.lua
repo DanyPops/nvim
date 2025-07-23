@@ -6,7 +6,7 @@ lint.linters_by_ft = {
 }
 
 -- Automatically lint on read & write
-vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
+vim.api.nvim_create_autocmd({ "BufWritePost" }, {
   callback = function()
     lint.try_lint()
   end,
