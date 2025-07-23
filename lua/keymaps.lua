@@ -15,9 +15,6 @@ map("n", "<C-S-s>", cmdWrap "wa") -- Write all to file
 map("i", "jk", "<ESC>") -- Insert to Normel
 map("n", "<C-c>", cmdWrap "%y+") -- Copy file content
 map("n", "<leader>h", cmdWrap "set hlsearch!") -- Toggle search highlight
--- Insert empty lines
-map('n', '<CR>', 'm`o<Esc>``')
-map('n', '<S-CR>', 'm`O<Esc>``')
 
 -- Toggle floating terminal
 map("n", "<leader>e", cmdWrap 'lua require("FTerm").toggle()')
