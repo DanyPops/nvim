@@ -69,7 +69,7 @@ lspconfig.lua_ls.setup {
 }
 
 -- setup multiple servers with same default options
-local servers = { "tsserver", "html", "cssls", "gopls", "zls"}
+local servers = { "ts_ls", "html", "cssls", "gopls", "zls", "basedpyright", "clangd", "rust-analyzer"}
 
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {

@@ -5,12 +5,6 @@ local plugins = {
   -- colorscheme
   {
     "ellisonleao/gruvbox.nvim",
-    priority = 1000,
-    config = function()
-      require("gruvbox").setup {
-        contrast = "hard",
-      }
-    end,
   },
 
   -- icons
@@ -125,12 +119,20 @@ local plugins = {
     end,
   },
 
-  -- formatting & linting
+  -- formatting
   {
     "stevearc/conform.nvim",
     lazy = true,
     config = function()
       require "plugins.configs.conform"
+    end,
+  },
+
+  -- linting
+  {
+    "mfussenegger/nvim-lint",
+    config = function()
+      require "plugins.configs.lint"
     end,
   },
 
@@ -181,7 +183,7 @@ local plugins = {
   -- Noice command line
   {
     "folke/noice.nvim",
-    enabled = false,
+    -- enabled = false,
     event = "VeryLazy",
     opts = {},
     dependencies = {
