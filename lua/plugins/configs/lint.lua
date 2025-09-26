@@ -3,6 +3,7 @@ local lint = require "lint"
 -- Configure golangci-lint for Go files
 lint.linters_by_ft = {
   go = { "golangcilint" },
+  yaml = { "yamllint" }
 }
 
 -- Automatically lint on read & write
