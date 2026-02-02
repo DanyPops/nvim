@@ -5,7 +5,9 @@ conform.setup {
     lua = { "stylua" },
     go = { "gofmt" },
     python = { "black" },
-    javascript = { "prettier" },
+    javascript = { "prettierd" },
+    typescript = { "prettierd" },
     yaml = { "yamlfmt" },
+    rust = { "rustfmt" }
   },
 }

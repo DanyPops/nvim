@@ -168,7 +168,19 @@ local plugins = {
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
     config = function()
-      require("gitsigns").setup()
+      require("gitsigns").setup {
+        on_attach = function(buf)
+          local gs = package.loaded.gitsigns
+          vim.keymap.set("n", "]h", function()
+            gs.nav_hunk "next"
+          end, { buffer = buf })
+          vim.keymap.set("n", "[h", function()
+            gs.nav_hunk "prev"
+          end, { buffer = buf })
+          vim.keymap.set("n", "<leader>hp", gs.preview_hunk, { buffer = buf })
+          vim.keymap.set("n", "<leader>hl", gs.setloclist, { buffer = buf })
+        end,
+      }
     end,
   },
 
@@ -278,6 +290,7 @@ local plugins = {
   },
   {
     "yetone/avante.nvim",
+    enabled = false,
     event = "VeryLazy",
     version = false,
     ---@module 'avante'
