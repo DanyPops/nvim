@@ -48,7 +48,7 @@ capabilities.textDocument.completion.completionItem = {
     },
   },
 }
-
+-- Setup language servers using built-in LSP config (nvim 0.11+).
 vim.lsp.config("lua_ls", {
   capabilities = capabilities,
   settings = {

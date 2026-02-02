@@ -50,3 +50,20 @@ map("v", "<leader>/", "<ESC><cmd>lua require('Comment.api').toggle.linewise(vim.
 map("n", "<leader>fm", function()
   require("conform").format()
 end)
+
+-- AI assistants (Avante enabled, CodeCompanion optional)
+local function map_cmd_if_exists(mode, lhs, cmd, desc)
+  if vim.fn.exists(":" .. cmd) == 2 then
+    map(mode, lhs, "<cmd>" .. cmd .. "<CR>", { desc = desc })
+  end
+end
+
+-- Avante
+map_cmd_if_exists("n", "<leader>aa", "AvanteToggle", "Avante: Toggle sidebar")
+map_cmd_if_exists("n", "<leader>aq", "AvanteAsk", "Avante: Ask")
+map_cmd_if_exists("n", "<leader>ac", "AvanteChat", "Avante: Chat")
+map_cmd_if_exists("n", "<leader>an", "AvanteChatNew", "Avante: New chat")
+map_cmd_if_exists("n", "<leader>ah", "AvanteHistory", "Avante: History")
+map_cmd_if_exists("n", "<leader>as", "AvanteStop", "Avante: Stop")
+map_cmd_if_exists("n", "<leader>ar", "AvanteRefresh", "Avante: Refresh UI")
+

@@ -290,21 +290,32 @@ local plugins = {
   },
   {
     "yetone/avante.nvim",
-    enabled = false,
+    enabled = true,
     event = "VeryLazy",
     version = false,
+    build = "make",
     ---@module 'avante'
     ---@type avante.Config
     opts = {
-      provider = "openai",
+      provider = "codex",
       providers = {
         openai = {
-          endpoint = "https://api.openai.com/v1",
-          model = "gpt-4o",
+          endpoint = "https://api.openai.com/v1/responses",
+          model = "gpt-5.2-codex",
           timeout = 30000,
           extra_request_body = {
             temperature = 0.75,
-            max_tokens = 20480,
+            max_output_tokens = 16384,
+          },
+        },
+      },
+      acp_providers = {
+        ["codex"] = {
+          command = "npx",
+          args = { "@zed-industries/codex-acp" },
+          env = {
+            NODE_NO_WARNINGS = "1",
+            OPENAI_API_KEY = os.getenv("OPENAI_API_KEY"),
           },
         },
       },
