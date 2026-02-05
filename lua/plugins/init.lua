@@ -2,6 +2,43 @@ local plugins = {
   -- lua nvim library
   { lazy = true, "nvim-lua/plenary.nvim" },
 
+  -- local dev plugin
+  {
+    dir = "/home/dpopsuev/Projects/stem.nvim",
+    name = "stem.nvim",
+    cmd = {
+      "StemNew",
+      "StemOpen",
+      "StemSave",
+      "StemClose",
+      "StemAdd",
+      "StemRemove",
+      "StemRename",
+      "StemList",
+      "StemStatus",
+      "StemUntitledList",
+    },
+    opts = {
+      workspace = {
+        auto_add_cwd = true,
+        confirm_close = true,
+        temp_root = "/tmp/stem/named",
+        temp_untitled_root = "/tmp/stem/temporary",
+        bindfs_args = { "--no-allow-other" },
+      },
+      session = {
+        enabled = true,
+        auto_load = true,
+      },
+      oil = {
+        follow = true,
+      },
+    },
+    config = function(_, opts)
+      require("stem").setup(opts)
+    end,
+  },
+
   -- colorscheme
   {
     "loctvl842/monokai-pro.nvim",
