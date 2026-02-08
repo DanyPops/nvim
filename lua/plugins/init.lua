@@ -6,25 +6,11 @@ local plugins = {
   {
     dir = "/home/dpopsuev/Projects/stem.nvim",
     name = "stem.nvim",
-    cmd = {
-      "StemNew",
-      "StemOpen",
-      "StemSave",
-      "StemClose",
-      "StemAdd",
-      "StemRemove",
-      "StemRename",
-      "StemList",
-      "StemStatus",
-      "StemUntitledList",
-    },
+    lazy = false,
     opts = {
       workspace = {
         auto_add_cwd = true,
         confirm_close = true,
-        temp_root = "/tmp/stem/named",
-        temp_untitled_root = "/tmp/stem/temporary",
-        bindfs_args = { "--no-allow-other" },
       },
       session = {
         enabled = true,
