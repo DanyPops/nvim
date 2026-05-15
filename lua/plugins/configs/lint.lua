@@ -1,14 +1,16 @@
 local lint = require "lint"
 
--- Configure golangci-lint for Go files
 lint.linters_by_ft = {
-  go = { "golangcilint" },
-  yaml = { "yamllint" }
+  go   = { "golangcilint" },
+  yaml = { "yamllint" },
 }
 
--- Automatically lint on read & write
+local augroup = vim.api.nvim_create_augroup("nvim-lint", { clear = true })
+
 vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+  group    = augroup,
   callback = function()
     lint.try_lint()
   end,
+  desc = "Lint on save",
 })
