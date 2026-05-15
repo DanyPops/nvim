@@ -31,5 +31,4 @@ opt.termguicolors = true
 opt.timeoutlen = 400
 opt.undofile = true
 
-opt.timeoutlen = 400
 opt.updatetime = 250
