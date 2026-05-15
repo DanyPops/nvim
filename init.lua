@@ -21,4 +21,4 @@ vim.opt.rtp:prepend(lazypath)
 
 require "plugins"
 
-vim.cmd.colorscheme "monokai-pro-ristretto"
+vim.cmd.colorscheme "akko"

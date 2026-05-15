@@ -2,11 +2,26 @@ local plugins = {
   -- lua nvim library
   { lazy = true, "nvim-lua/plenary.nvim" },
 
-  -- colorscheme
+  -- Lush — colorscheme DSL (required by akko)
   {
-    "loctvl842/monokai-pro.nvim",
+    "rktjmp/lush.nvim",
+    lazy = false,
+    priority = 1001,  -- load before the colorscheme
+  },
+
+  -- akko — custom colorscheme derived from ~/Pictures/akko_bllom.JPG
+  -- Edit lua/lush_theme/akko.lua and run :LushRunTutorial to iterate live.
+  {
+    dir = vim.fn.stdpath("config"),
+    name = "akko",
     lazy = false,
     priority = 1000,
+  },
+
+  -- monokai-pro kept as fallback (:colorscheme monokai-pro)
+  {
+    "loctvl842/monokai-pro.nvim",
+    lazy = true,
   },
   -- icons
   {
