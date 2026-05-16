@@ -61,8 +61,17 @@ local theme = lush(function(injected_functions)
   -- H≈207  Muted steel-blue from the overcast sky background.
   -- Variables, identifiers, parameters.
 
-  local sky   = hsl(207, 32, 58)    -- #6d9aba  variables
-  local cloud = hsl(207, 18, 72)    -- #9eb8ca  parameters, subtle
+  -- Sky promotes to TYPES (classes, interfaces, type annotations)
+  local sky   = hsl(207, 35, 62)    -- #74a2c0  types, classes
+  local cloud = hsl(207, 20, 74)    -- #a4bccc  parameters, subtle blue
+
+  -- ── Leaf ────────────────────────────────────────────────────────────────
+  -- H≈155  Sage green — the third hue in the triadic scheme.
+  -- Represents FUNCTIONS and METHODS (the callable things).
+  -- Drawn from nature: the leaves implied by the blossoming branches.
+
+  local leaf  = hsl(155, 30, 62)    -- #72b89e  functions, methods
+  local frond = hsl(155, 22, 72)    -- #9dc4b8  subtle function tint
 
   -- ── Status ──────────────────────────────────────────────────────────────
 
@@ -171,8 +180,9 @@ local theme = lush(function(injected_functions)
     Boolean        { fg = sienna,   italic = true },
     Float          { fg = sienna },
 
+    -- Triadic: Pink=keywords · Leaf=functions · Sky=types · Amber=strings
     Identifier     { fg = txt1 },
-    Function       { fg = petal },
+    Function       { fg = leaf },
 
     Statement      { fg = blossom,  bold = true },
     Conditional    { fg = blossom,  bold = true },
@@ -188,10 +198,10 @@ local theme = lush(function(injected_functions)
     Macro          { fg = amber },
     PreCondit      { fg = sky },
 
-    Type           { fg = petal },
+    Type           { fg = sky },
     StorageClass   { fg = blossom },
-    Structure      { fg = petal },
-    Typedef        { fg = petal },
+    Structure      { fg = sky },
+    Typedef        { fg = sky },
 
     Special        { fg = bloom },
     SpecialChar    { fg = gold },
@@ -208,9 +218,9 @@ local theme = lush(function(injected_functions)
     -- ── Treesitter ───────────────────────────────────────────────────────
 
     sym("@variable")                { fg = txt1 },
-    sym("@variable.builtin")        { fg = sky,      italic = true },
+    sym("@variable.builtin")        { fg = frond,    italic = true },
     sym("@variable.parameter")      { fg = cloud },
-    sym("@variable.member")         { fg = sky },
+    sym("@variable.member")         { fg = cloud },
 
     sym("@constant")                { fg = amber },
     sym("@constant.builtin")        { fg = sienna,   italic = true },
@@ -225,14 +235,14 @@ local theme = lush(function(injected_functions)
     sym("@number.float")            { fg = sienna },
     sym("@boolean")                 { fg = sienna,   italic = true },
 
-    sym("@function")                { fg = petal },
-    sym("@function.builtin")        { fg = bloom },
-    sym("@function.call")           { fg = petal },
+    sym("@function")                { fg = leaf },
+    sym("@function.builtin")        { fg = leaf,     bold = true },
+    sym("@function.call")           { fg = leaf },
     sym("@function.macro")          { fg = amber },
-    sym("@function.method")         { fg = petal },
-    sym("@function.method.call")    { fg = petal },
+    sym("@function.method")         { fg = leaf },
+    sym("@function.method.call")    { fg = leaf },
 
-    sym("@constructor")             { fg = petal },
+    sym("@constructor")             { fg = leaf },
 
     sym("@keyword")                 { fg = blossom,  bold = true },
     sym("@keyword.return")          { fg = bloom,    bold = true },
@@ -242,9 +252,9 @@ local theme = lush(function(injected_functions)
     sym("@keyword.conditional")     { fg = blossom,  bold = true },
     sym("@keyword.repeat")          { fg = blossom,  bold = true },
 
-    sym("@type")                    { fg = petal },
-    sym("@type.builtin")            { fg = petal,    italic = true },
-    sym("@type.definition")         { fg = petal },
+    sym("@type")                    { fg = sky },
+    sym("@type.builtin")            { fg = sky,      italic = true },
+    sym("@type.definition")         { fg = sky },
     sym("@type.qualifier")          { fg = blossom },
 
     sym("@attribute")               { fg = gold },
