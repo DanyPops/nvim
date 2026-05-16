@@ -32,13 +32,13 @@ local theme = lush(function(injected_functions)
   local txt0 = hsl(340, 30, 90)  -- #eedde8  brightest, emphasis
   local txt1 = hsl(340, 18, 82)  -- #d4c4cc  normal text
   local txt2 = hsl(340, 10, 62)  -- #a29098  comments, dim
-  local txt3 = hsl(340,  8, 42)  -- #6e5f65  line numbers, disabled
+  local txt3 = hsl(340, 10, 63)  -- #a99098  line numbers, disabled (bumped for transparency)
 
   -- ── Blossom ─────────────────────────────────────────────────────────────
   -- H≈352  Saturated pink-magenta — the dominant colour of the photo.
   -- Keywords, operators, primary UI accent.
 
-  local blossom = hsl(352, 55, 57)  -- #c55778  keywords, statements
+  local blossom = hsl(352, 55, 65)  -- #d4728a  keywords, statements (bumped for transparency)
   local petal   = hsl(352, 42, 68)  -- #d4849a  types, classes, builtins
   local bloom   = hsl(352, 60, 74)  -- #e890a8  strong emphasis, special kw
   local blush   = hsl(352, 28, 84)  -- #dfcad2  subtle decoration
@@ -47,9 +47,15 @@ local theme = lush(function(injected_functions)
   -- H≈12-22  Warm sienna and gold from the tree branches.
   -- Strings, constants, numeric literals.
 
-  local sienna = hsl( 12, 65, 45)   -- #be5430  numbers, constants
+  local sienna = hsl( 12, 65, 55)   -- #d4693e  numbers, constants (bumped for transparency)
   local amber  = hsl( 22, 62, 52)   -- #c4703a  strings
   local gold   = hsl( 38, 55, 60)   -- #d09e48  attributes, specials
+
+  -- ── Dim UI ──────────────────────────────────────────────────────────────
+  -- For UI chrome that was using bg4 (L=28) as fg — too dark on transparent bg.
+  -- Borders, indent guides, separators: needs to be visible but still subtle.
+
+  local dim = hsl(340, 18, 52)    -- #8e6878  subtle UI chrome (was bg4 at L=28)
 
   -- ── Sky ─────────────────────────────────────────────────────────────────
   -- H≈207  Muted steel-blue from the overcast sky background.
@@ -73,7 +79,7 @@ local theme = lush(function(injected_functions)
     Normal         { bg = bg1,      fg = txt1 },
     NormalNC       { bg = bg0,      fg = txt2 },
     NormalFloat    { bg = bg2,      fg = txt1 },
-    FloatBorder    { bg = bg2,      fg = bg4  },
+    FloatBorder    { bg = bg2,      fg = dim  },
     FloatTitle     { bg = bg2,      fg = blossom, bold = true },
 
     -- Cursor
@@ -91,11 +97,11 @@ local theme = lush(function(injected_functions)
     LineNr         { fg = txt3 },
     SignColumn     { bg = bg1 },
     ColorColumn    { bg = bg2 },
-    VertSplit      { fg = bg4,      bg = bg1 },
-    WinSeparator   { fg = bg4,      bg = bg1 },
+    VertSplit      { fg = dim },
+    WinSeparator   { fg = dim },
     Folded         { bg = bg2,      fg = txt3,   italic = true },
-    FoldColumn     { bg = bg1,      fg = bg4 },
-    EndOfBuffer    { fg = bg3 },
+    FoldColumn     { bg = bg1,      fg = dim },
+    EndOfBuffer    { fg = dim },
 
     -- Status / tab line
     StatusLine     { bg = bg2,      fg = txt2 },
@@ -133,9 +139,9 @@ local theme = lush(function(injected_functions)
 
     -- Misc UI
     MatchParen     { bg = bg4,      fg = bloom,  bold = true },
-    NonText        { fg = bg4 },
-    SpecialKey     { fg = bg4 },
-    Whitespace     { fg = bg4 },
+    NonText        { fg = dim },
+    SpecialKey     { fg = dim },
+    Whitespace     { fg = dim },
     Conceal        { fg = txt3 },
     Directory      { fg = sky,      bold = true },
     Title          { fg = blossom,  bold = true },
@@ -195,7 +201,7 @@ local theme = lush(function(injected_functions)
     Debug          { fg = warn },
 
     Underlined     { underline = true },
-    Ignore         { fg = bg4 },
+    Ignore         { fg = dim },
     Error          { fg = err,      bold = true },
     Todo           { fg = blossom,  bold = true, italic = true },
 
@@ -319,7 +325,7 @@ local theme = lush(function(injected_functions)
     -- ── Telescope ────────────────────────────────────────────────────────
 
     TelescopeNormal         { bg = bg2,      fg = txt1 },
-    TelescopeBorder         { bg = bg2,      fg = bg4  },
+    TelescopeBorder         { bg = bg2,      fg = dim  },
     TelescopePromptNormal   { bg = bg2,      fg = txt0 },
     TelescopePromptBorder   { bg = bg2,      fg = blossom },
     TelescopePromptTitle    { bg = blossom,  fg = bg0,  bold = true },
@@ -378,8 +384,8 @@ local theme = lush(function(injected_functions)
 
     -- ── Indent blankline ─────────────────────────────────────────────────
 
-    IblIndent    { fg = bg4 },
-    IblScope     { fg = blossom.darken(40).desaturate(20) },
+    IblIndent    { fg = dim },
+    IblScope     { fg = blossom.darken(10) },
 
     -- ── Pivi (our plugin) ─────────────────────────────────────────────────
 
