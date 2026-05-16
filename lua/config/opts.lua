@@ -33,3 +33,13 @@ opt.undofile = true
 
 opt.updatetime = 250
 
+-- Cursor blink in all modes
+-- blinkwait: delay before blinking starts  (ms)
+-- blinkon:   time cursor is visible         (ms)
+-- blinkoff:  time cursor is invisible       (ms)
+opt.guicursor = table.concat({
+  "n-v-c-sm:block-blinkwait700-blinkoff400-blinkon250",
+  "i-ci-ve:ver25-blinkwait700-blinkoff400-blinkon250",
+  "r-cr-o:hor20-blinkwait700-blinkoff400-blinkon250",
+}, ",")
+
