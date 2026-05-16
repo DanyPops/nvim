@@ -12,24 +12,57 @@ end
 lush(require("lush_theme.akko"))
 
 -- ── Transparency ───────────────────────────────────────────────────────────
--- Neovim normally paints Normal.bg over the terminal, blocking the wallpaper.
--- Clearing these groups lets Alacritty's (neutral black) background show
--- through at whatever opacity the terminal window is set to.
+-- Clear bg from every surface that should show the wallpaper through.
+-- The Lush theme sets explicit bg values on all groups so it works as a
+-- standalone opaque theme — this layer peels those back for transparency.
 --
--- Floats (NormalFloat, Pmenu, Telescope…) keep their bg — they should
--- be readable popups, not ghosted into the wallpaper.
+-- Groups intentionally kept opaque:
+--   Pmenu / PmenuSel   — completion menu needs contrast to be usable
+--   Cursor / Visual    — selection and cursor must be visible
+--   Search / IncSearch — search highlights must stand out
+--   DiagnosticVirtualText* — coloured bg is part of the design
 
 local transparent = {
-  "Normal",
-  "NormalNC",
-  "SignColumn",
-  "EndOfBuffer",
-  "LineNr",
-  "FoldColumn",
-  "WinSeparator",
-  "VertSplit",
-  "StatusLine",
-  "StatusLineNC",
+  -- ── Editor chrome ──────────────────────────────────────────────────
+  "Normal", "NormalNC",
+  "SignColumn", "FoldColumn",
+  "LineNr", "CursorLineNr",
+  "EndOfBuffer", "NonText",
+  "WinSeparator", "VertSplit",
+  "StatusLine", "StatusLineNC",
+  "TabLine", "TabLineFill",
+  "WinBar", "WinBarNC",
+
+  -- ── Floats (base — covers LSP hover, diagnostics float, etc.) ──────
+  "NormalFloat", "FloatBorder", "FloatTitle",
+
+  -- ── Telescope ──────────────────────────────────────────────────────
+  "TelescopeNormal",
+  "TelescopeBorder",
+  "TelescopePromptNormal",
+  "TelescopePromptBorder",
+  "TelescopeResultsNormal",
+  "TelescopeResultsBorder",
+  "TelescopePreviewNormal",
+  "TelescopePreviewBorder",
+
+  -- ── Noice ──────────────────────────────────────────────────────────
+  "NoiceCmdlinePopup",
+  "NoiceCmdlinePopupBorder",
+  "NoiceConfirm",
+  "NoiceConfirmBorder",
+  "NoiceMini",
+
+  -- ── Snacks ─────────────────────────────────────────────────────────
+  "SnacksDashboard",
+  "SnacksDashboardNormal",
+
+  -- ── Trouble ────────────────────────────────────────────────────────
+  "TroubleNormal",
+
+  -- ── Lazy / Mason (plugin manager UIs) ──────────────────────────────
+  "LazyNormal",
+  "MasonNormal",
 }
 
 local function apply()
