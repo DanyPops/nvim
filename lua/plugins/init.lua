@@ -328,6 +328,25 @@ local plugins = {
       },
     },
   },
+  -- pivi — Pi agent inside Neovim
+  {
+    dir    = vim.fn.expand("~/Projects/pivi"),
+    name   = "pivi",
+    lazy   = false,
+    config = function()
+      require("pivi").setup()
+    end,
+    keys = {
+      { "<leader>pa", "<cmd>PiviAsk<cr>",            desc = "Pi: ask (buffer)" },
+      { "<leader>ps", "<cmd>PiviAskSelection<cr>",   desc = "Pi: ask (selection)", mode = "v" },
+      { "<leader>pf", "<cmd>PiviFile<cr>",           desc = "Pi: send file" },
+      { "<leader>pl", "<cmd>PiviLaunch<cr>",         desc = "Pi: launch" },
+      { "<leader>px", "<cmd>PiviStop<cr>",           desc = "Pi: stop" },
+      { "<leader>p?", "<cmd>PiviStatus<cr>",         desc = "Pi: status" },
+      { "<leader>pk", "<cmd>PiviPackages<cr>",       desc = "Pi: extension manager" },
+      { "<leader>pp", "<cmd>PiviSend<cr>",           desc = "Pi: send prompt" },
+    },
+  },
 }
 
 -- lazy.nvim

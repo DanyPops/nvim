@@ -60,6 +60,10 @@ local transparent = {
   -- ── Trouble ────────────────────────────────────────────────────────
   "TroubleNormal",
 
+  -- ── Bufferline (top tab bar) ────────────────────────────────────────
+  "BufferLineFill",        -- bar background — was #180c0f, the black bar
+  "BufferLineBackground",  -- inactive buffer bg
+
   -- ── Lazy / Mason (plugin manager UIs) ──────────────────────────────
   "LazyNormal",
   "MasonNormal",
