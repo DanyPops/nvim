@@ -28,25 +28,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-
-capabilities.textDocument.completion.completionItem = {
-  documentationFormat    = { "markdown", "plaintext" },
-  snippetSupport         = true,
-  preselectSupport       = true,
-  insertReplaceSupport   = true,
-  labelDetailsSupport    = true,
-  deprecatedSupport      = true,
-  commitCharactersSupport = true,
-  tagSupport             = { valueSet = { 1 } },
-  resolveSupport         = {
-    properties = {
-      "documentation",
-      "detail",
-      "additionalTextEdits",
-    },
-  },
-}
+-- blink.cmp handles all capability negotiation, including snippet support,
+-- completion item resolve, etc. No manual construction needed.
+local capabilities = require("blink.cmp").get_lsp_capabilities()
 
 vim.lsp.config("lua_ls", {
   capabilities = capabilities,
