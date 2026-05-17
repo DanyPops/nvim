@@ -12,18 +12,20 @@ end
 lush(require("lush_theme.akko"))
 
 -- ── Transparency ───────────────────────────────────────────────────────────
--- Clear bg from every surface that should show the wallpaper through.
--- The Lush theme sets explicit bg values on all groups so it works as a
--- standalone opaque theme — this layer peels those back for transparency.
+-- Clear bg from editor surfaces so the terminal/wallpaper shows through.
 --
--- Groups intentionally kept opaque:
---   Pmenu / PmenuSel   — completion menu needs contrast to be usable
---   Cursor / Visual    — selection and cursor must be visible
---   Search / IncSearch — search highlights must stand out
---   DiagnosticVirtualText* — coloured bg is part of the design
+-- Rule: EDITOR surfaces (where you write code) → transparent.
+--       TOOL WINDOWS (Lazy, Mason, Telescope…) → keep themed bg for readability.
+--
+-- Intentionally kept opaque:
+--   Pmenu/PmenuSel     — completion popup needs contrast
+--   Cursor/Visual      — must always be visible
+--   Search/IncSearch   — must stand out
+--   LazyNormal         — tool modal: needs bg so text is readable over wallpaper
+--   MasonNormal        — same
 
 local transparent = {
-  -- ── Editor chrome ──────────────────────────────────────────────────
+  -- ── Editor chrome ─────────────────────────────────────────────────
   "Normal", "NormalNC",
   "SignColumn", "FoldColumn",
   "LineNr", "CursorLineNr",
@@ -33,10 +35,12 @@ local transparent = {
   "TabLine", "TabLineFill",
   "WinBar", "WinBarNC",
 
-  -- ── Floats (base — covers LSP hover, diagnostics float, etc.) ──────
+  -- ── Generic floats (LSP hover, diagnostics, etc.) ─────────────────
+  -- Note: NormalFloat is cleared so lightweight floats blend in,
+  -- but specific tool windows override this with their own bg.
   "NormalFloat", "FloatBorder", "FloatTitle",
 
-  -- ── Telescope ──────────────────────────────────────────────────────
+  -- ── Telescope ─────────────────────────────────────────────────────
   "TelescopeNormal",
   "TelescopeBorder",
   "TelescopePromptNormal",
@@ -46,43 +50,73 @@ local transparent = {
   "TelescopePreviewNormal",
   "TelescopePreviewBorder",
 
-  -- ── Noice ──────────────────────────────────────────────────────────
+  -- ── Noice ─────────────────────────────────────────────────────────
   "NoiceCmdlinePopup",
   "NoiceCmdlinePopupBorder",
   "NoiceConfirm",
   "NoiceConfirmBorder",
   "NoiceMini",
 
-  -- ── Snacks ─────────────────────────────────────────────────────────
+  -- ── Snacks dashboard ──────────────────────────────────────────────
   "SnacksDashboard",
   "SnacksDashboardNormal",
 
-  -- ── Trouble ────────────────────────────────────────────────────────
+  -- ── Trouble ───────────────────────────────────────────────────────
   "TroubleNormal",
 
-  -- ── Bufferline (top tab bar) ────────────────────────────────────────
-  "BufferLineFill",        -- bar background — was #180c0f, the black bar
-  "BufferLineBackground",  -- inactive buffer bg
+  -- ── Bufferline top bar ────────────────────────────────────────────
+  "BufferLineFill",
+  "BufferLineBackground",
+}
 
-  -- ── Lazy / Mason (plugin manager UIs) ──────────────────────────────
+-- ── Tool window surfaces — themed bg, NOT transparent ─────────────────────
+-- These are modal/panel windows. Making them transparent causes them to float
+-- over the wallpaper with no visual depth, making text hard to read.
+-- We pin them to our theme's popup background (bg2).
+
+local themed = {
+  -- Lazy.nvim: without a bg, Normal.bg=nil triggers has_bg=false in Lazy's
+  -- float.lua and disables the backdrop entirely; the popup then shows pure
+  -- terminal black rather than our palette.
   "LazyNormal",
+  "LazyBackdrop",
+
+  -- Mason package manager
   "MasonNormal",
 }
 
 local function apply()
+  -- Clear bg from editor surfaces
   for _, name in ipairs(transparent) do
     local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
     hl.bg      = nil
     hl.ctermbg = nil
     vim.api.nvim_set_hl(0, name, hl)
   end
+
+  -- Pin tool windows to our popup bg so they look themed, not black voids.
+  -- bg2 = hsl(342, 24, 14) ≈ #261a20 — our popup/float background colour.
+  local bg2 = vim.api.nvim_get_hl(0, { name = "NormalFloat", link = false }).bg
+  -- NormalFloat bg was just cleared, so grab bg2 from a group that keeps it.
+  -- FloatTitle still has our blossom fg but its bg was set by Lush.
+  -- Easiest: read it from the Lush theme's Pmenu which always keeps its bg.
+  local popup_bg = vim.api.nvim_get_hl(0, { name = "Pmenu", link = false }).bg
+
+  if popup_bg then
+    for _, name in ipairs(themed) do
+      local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
+      hl.bg      = popup_bg
+      hl.ctermbg = nil
+      vim.api.nvim_set_hl(0, name, hl)
+    end
+  end
 end
 
 apply()
 
--- Re-apply after any :colorscheme reload so transparency survives
+-- Re-apply after any :colorscheme reload
 vim.api.nvim_create_autocmd("ColorScheme", {
   pattern  = "akko",
   callback = function() vim.schedule(apply) end,
-  desc     = "akko: keep transparent groups clear after reload",
+  desc     = "akko: transparency + tool-window theming after reload",
 })
