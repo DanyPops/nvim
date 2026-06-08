@@ -3,6 +3,7 @@ local lint = require "lint"
 lint.linters_by_ft = {
   go   = { "golangcilint" },
   yaml = { "yamllint" },
+  rust = { "clippy" },
 }
 
 local augroup = vim.api.nvim_create_augroup("nvim-lint", { clear = true })

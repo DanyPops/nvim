@@ -1,6 +1,6 @@
 require "config.opts"
 
-require "config.keymaps"
+require("config.keymaps").setup()
 
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"

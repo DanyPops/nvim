@@ -7,7 +7,10 @@ conform.setup {
     python = { "black" },
     javascript = { "prettierd" },
     typescript = { "prettierd" },
-    yaml = { "yamlfmt" },
-    rust = { "rustfmt" }
+    yaml   = { "yamlfmt" },
+    rust   = { "rustfmt" },
+    c      = { "clang-format" },
+    cpp    = { "clang-format" },
+    zig    = { "zigfmt" },
   },
 }

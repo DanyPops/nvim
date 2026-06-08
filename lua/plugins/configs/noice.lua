@@ -6,13 +6,13 @@ require("noice").setup {
   },
 
   lsp = {
-    -- Override markdown rendering so cmp and other plugins use Treesitter
     override = {
       ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
       ["vim.lsp.util.stylize_markdown"]                = true,
-      ["cmp.entry.get_documentation"]                  = true,
     },
   },
+
+  notify = { enabled = false },
 
   presets = {
     bottom_search         = true,  -- classic bottom cmdline for search

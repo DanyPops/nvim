@@ -6,6 +6,16 @@ opt.showmode = false
 -- Centering
 opt.scrolloff = 999
 
+-- In TTY with tmux: use tmux buffer as clipboard provider.
+-- In Wayland/X11: wl-paste / xclip handle it via OSC 52 / unnamedplus.
+if vim.env.TMUX and not vim.env.WAYLAND_DISPLAY and not vim.env.DISPLAY then
+  vim.g.clipboard = {
+    name  = "tmux",
+    copy  = { ["+"] = "tmux load-buffer -",  ["*"] = "tmux load-buffer -" },
+    paste = { ["+"] = "tmux save-buffer -",  ["*"] = "tmux save-buffer -" },
+    cache_enabled = 0,
+  }
+end
 opt.clipboard = "unnamedplus"
 
 -- Indenting
