@@ -46,9 +46,13 @@ function M.setup()
   -- Format
   map("n", "<leader>fm", function() require("conform").format() end, { desc = "Format file" })
 
-  -- Discoverability: fuzzy-search keymaps or help when you forget something
-  map("n", "<leader>?",  function() Snacks.picker.keymaps() end, { desc = "Find: keymaps" })
-  map("n", "<leader>fh", function() Snacks.picker.help() end,    { desc = "Find: help tags" })
+  -- Discoverability
+  -- <leader>? — which-key popup for every buffer-local keymap (gd, gr, rust, gitsigns…)
+  --             Shows the organised grouped view, not just the , prefix.
+  map("n", "<leader>?",  function() require("which-key").show({ global = false }) end, { desc = "Keymaps: buffer-local (which-key)" })
+  -- <leader>fk — fuzzy search all keymaps by description when you remember the concept
+  map("n", "<leader>fk", function() Snacks.picker.keymaps() end,                     { desc = "Find: keymaps" })
+  map("n", "<leader>fh", function() Snacks.picker.help() end,                         { desc = "Find: help tags" })
 
   -- Diagnostics (global — work in any buffer, not just LSP-attached ones)
   map("n", "<space>e", vim.diagnostic.open_float, { desc = "LSP: diagnostic float" })
