@@ -68,18 +68,26 @@ vim.diagnostic.config {
   float        = { border = "rounded", header = "", source = "if_many" },
 }
 
--- Diff highlights: preserve syntax colours in the foreground, use only the
--- background to show what changed. Reads the bg the colorscheme already sets
--- and strips fg so LSP/treesitter colours remain visible inside diffs.
+-- Diff highlights: background-only, so syntax colours stay visible.
+--
+-- Colour derivation (all HSL, akko palette hues, S=20 L=13 — darker than
+-- the theme's darken(60) which lands at S=38 L=20 and fights the text):
+--
+--   bg1 editor          hsl(342, 28, 10) #1c1117  baseline
+--   DiffAdd   leaf hue  hsl(145, 20, 13) #1b2820  +3L green tint
+--   DiffChange gold hue hsl( 38, 20, 13) #28231b  +3L amber tint
+--   DiffDelete blossom  hsl(352, 20, 13) #281b1c  +3L pink  tint
+--   DiffText   gold hue hsl( 38, 30, 16) #352c1d  +6L S+10  word-level
+--
+-- Principle (Tonsky): background covers large area, so hue is perceptible
+-- even at L=13. The tint whispers semantic meaning without shouting.
 vim.api.nvim_create_autocmd("ColorScheme", {
   pattern  = "*",
   callback = function()
-    for _, name in ipairs({ "DiffAdd", "DiffChange", "DiffDelete", "DiffText" }) do
-      local hl     = vim.api.nvim_get_hl(0, { name = name, link = false })
-      hl.fg        = nil
-      hl.ctermfg   = nil
-      vim.api.nvim_set_hl(0, name, hl)
-    end
+    vim.api.nvim_set_hl(0, "DiffAdd",    { bg = "#1b2820" })
+    vim.api.nvim_set_hl(0, "DiffChange", { bg = "#28231b" })
+    vim.api.nvim_set_hl(0, "DiffDelete", { bg = "#281b1c" })
+    vim.api.nvim_set_hl(0, "DiffText",   { bg = "#352c1d", bold = true })
   end,
 })
 
