@@ -68,3 +68,18 @@ vim.diagnostic.config {
   float        = { border = "rounded", header = "", source = "if_many" },
 }
 
+-- Diff highlights: preserve syntax colours in the foreground, use only the
+-- background to show what changed. Reads the bg the colorscheme already sets
+-- and strips fg so LSP/treesitter colours remain visible inside diffs.
+vim.api.nvim_create_autocmd("ColorScheme", {
+  pattern  = "*",
+  callback = function()
+    for _, name in ipairs({ "DiffAdd", "DiffChange", "DiffDelete", "DiffText" }) do
+      local hl     = vim.api.nvim_get_hl(0, { name = name, link = false })
+      hl.fg        = nil
+      hl.ctermfg   = nil
+      vim.api.nvim_set_hl(0, name, hl)
+    end
+  end,
+})
+
