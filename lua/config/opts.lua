@@ -53,3 +53,18 @@ opt.guicursor = table.concat({
   "r-cr-o:hor20-blinkwait700-blinkoff400-blinkon250",
 }, ",")
 
+-- Geometric diagnostic signs — mirrors tmux Bauhaus glyph vocabulary:
+--   ■ solid square · ▲ triangle · ● circle · ◆ diamond · ▪ small square
+vim.diagnostic.config {
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = "■",
+      [vim.diagnostic.severity.WARN]  = "▲",
+      [vim.diagnostic.severity.INFO]  = "●",
+      [vim.diagnostic.severity.HINT]  = "◆",
+    },
+  },
+  virtual_text = { prefix = "▪" },
+  float        = { border = "rounded", header = "", source = "if_many" },
+}
+

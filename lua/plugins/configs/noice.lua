@@ -1,4 +1,16 @@
 require("noice").setup {
+  -- Geometric cmdline icons — geometry only, no pictograms
+  cmdline = {
+    format = {
+      cmdline     = { icon = "▪" },
+      search_down = { icon = "●" },
+      search_up   = { icon = "●" },
+      filter      = { icon = "◆" },
+      lua         = { icon = "▸" },
+      help        = { icon = "■" },
+    },
+  },
+
   views = {
     cmdline       = { position = "40%" },
     cmdline_popup = { position = "40%" },

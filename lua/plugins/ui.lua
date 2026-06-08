@@ -3,14 +3,52 @@ return {
     "akinsho/bufferline.nvim",
     event  = "BufReadPre",
     config = function()
-      require("bufferline").setup { options = { themable = true } }
+      require("bufferline").setup {
+        options = {
+          themable                = true,
+          separator_style         = "slant",
+          indicator               = { style = "icon", icon = "▎" },
+          modified_icon           = "▪",
+          show_buffer_close_icons = false,
+          show_close_icon         = false,
+        },
+      }
     end,
   },
 
   {
     "echasnovski/mini.statusline",
     config = function()
-      require("mini.statusline").setup { set_vim_settings = false }
+      require("mini.statusline").setup {
+        set_vim_settings = false,
+        content = {
+          active = function()
+            local M            = require("mini.statusline")
+            local mode, hl     = M.section_mode({ trunc_width = 120 })
+            local git          = M.section_git({ trunc_width = 75, icon = "▪" })
+            local diff         = M.section_diff({ trunc_width = 75 })
+            local diagnostics  = M.section_diagnostics({
+              trunc_width = 75,
+              signs       = { ERROR = "■", WARN = "▲", INFO = "●", HINT = "◆" },
+            })
+            local lsp          = M.section_lsp({ trunc_width = 75 })
+            local fname        = M.section_filename({ trunc_width = 140 })
+            local finfo        = M.section_fileinfo({ trunc_width = 120 })
+            local location     = M.section_location({ trunc_width = 75 })
+            local search       = M.section_searchcount({ trunc_width = 75 })
+
+            return M.combine_groups({
+              { hl = hl,                       strings = { mode } },
+              { hl = "MiniStatuslineDevinfo",  strings = { git, diff, diagnostics, lsp } },
+              "%<",
+              { hl = "MiniStatuslineFilename", strings = { fname } },
+              "%=",
+              { hl = "MiniStatuslineFileinfo", strings = { search, finfo } },
+              { hl = hl,                       strings = { location } },
+            })
+          end,
+        },
+      }
     end,
   },
 
@@ -38,7 +76,13 @@ return {
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
-    opts  = {},
+    opts  = {
+      icons = {
+        breadcrumb = "●",
+        separator  = "▪",
+        group      = "▸ ",
+      },
+    },
   },
 
   {
@@ -48,7 +92,24 @@ return {
     ---@type snacks.Config
     opts = {
       bigfile      = { enabled = true },
-      dashboard    = { enabled = true },
+      dashboard = {
+        enabled = true,
+        preset  = {
+          header = table.concat({
+            "════════════════════════════════════════",
+            "       ●  N E O V I M  ●       ",
+            "       ▪  akko blossom  ▪       ",
+            "════════════════════════════════════════",
+          }, "\n"),
+          keys = {
+            { icon = "▪", key = "f", desc = "Find File",  action = ":lua Snacks.picker.files()"  },
+            { icon = "●", key = "r", desc = "Recent",     action = ":lua Snacks.picker.recent()" },
+            { icon = "◆", key = "g", desc = "Grep",       action = ":lua Snacks.picker.grep()"   },
+            { icon = "■", key = "n", desc = "New File",   action = ":enew"                       },
+            { icon = "▦", key = "q", desc = "Quit",       action = ":qa"                         },
+          },
+        },
+      },
       explorer     = { enabled = true },
       indent       = { enabled = true },
       input        = { enabled = true },
