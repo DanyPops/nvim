@@ -51,10 +51,9 @@ function M.setup()
   map("n", "<leader>fh", function() Snacks.picker.help() end,    { desc = "Find: help tags" })
 
   -- Diagnostics (global — work in any buffer, not just LSP-attached ones)
-  map("n", "<space>e", vim.diagnostic.open_float, { desc = "LSP: show diagnostics" })
-  map("n", "[d",       vim.diagnostic.goto_prev,  { desc = "LSP: previous diagnostic" })
+  map("n", "<space>e", vim.diagnostic.open_float, { desc = "LSP: diagnostic float" })
+  map("n", "[d",       vim.diagnostic.goto_prev,  { desc = "LSP: prev diagnostic" })
   map("n", "]d",       vim.diagnostic.goto_next,  { desc = "LSP: next diagnostic" })
-  map("n", "<space>q", vim.diagnostic.setloclist, { desc = "LSP: diagnostics to loclist" })
 end
 
 -- ── LSP — buffer-local, called from LspAttach ─────────────────────────────────
@@ -62,15 +61,19 @@ end
 function M.lsp(bufnr, client)
   local opts = function(desc) return { buffer = bufnr, desc = desc } end
 
-  map("n", "gD",        vim.lsp.buf.declaration,           opts("LSP: go to declaration"))
-  map("n", "gd",        vim.lsp.buf.definition,            opts("LSP: go to definition"))
-  map("n", "K",         vim.lsp.buf.hover,                 opts("LSP: hover docs"))
-  map("n", "gi",        vim.lsp.buf.implementation,        opts("LSP: go to implementation"))
-  map("n", "<C-k>",     vim.lsp.buf.signature_help,        opts("LSP: signature help"))
-  map("n",        "<space>D",  vim.lsp.buf.type_definition, opts("LSP: type definition"))
-  map("n",        "<space>rn", vim.lsp.buf.rename,          opts("LSP: rename symbol"))
-  map({ "n","v" },"<space>ca", vim.lsp.buf.code_action,     opts("LSP: code action"))
-  map("n",        "gr",        vim.lsp.buf.references,      opts("LSP: references"))
+  -- Navigation — snacks picker for multi-result; raw lsp for single-result
+  map("n", "gd", function() Snacks.picker.lsp_definitions() end,      opts("LSP: definitions"))
+  map("n", "gr", function() Snacks.picker.lsp_references() end,       opts("LSP: references"))
+  map("n", "gi", function() Snacks.picker.lsp_implementations() end,  opts("LSP: implementations"))
+  map("n", "gD", vim.lsp.buf.declaration,                             opts("LSP: declaration"))
+  map("n", "K",  vim.lsp.buf.hover,                                   opts("LSP: hover"))
+
+  -- Code actions
+  map("n",        "<space>rn", vim.lsp.buf.rename,      opts("LSP: rename"))
+  map({ "n","v" },"<space>ca", vim.lsp.buf.code_action, opts("LSP: code action"))
+
+  -- Type definition via picker (shows parent type of symbol under cursor)
+  map("n", "<space>D", function() Snacks.picker.lsp_type_definitions() end, opts("LSP: type definition"))
 
   -- clangd only: toggle between .h/.hpp and .c/.cpp
   if client and client.name == "clangd" then
