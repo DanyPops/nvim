@@ -114,7 +114,13 @@ return {
       explorer     = { enabled = true },
       indent       = { enabled = true },
       input        = { enabled = true },
-      picker       = { enabled = true },
+      picker = {
+        enabled = true,
+        sources = {
+          -- ivy = full-width bottom strip; description column no longer truncated
+          keymaps = { layout = { preset = "ivy" } },
+        },
+      },
       notifier     = { enabled = true },
       quickfile    = { enabled = true },
       scope        = { enabled = true },
