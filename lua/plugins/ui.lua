@@ -1,4 +1,12 @@
 return {
+  -- ASCII art library — text/neovim category used by the snacks dashboard header.
+  -- nui.nvim is already pulled by noice; lazy.nvim deduplicates it.
+  {
+    "MaximilianLloyd/ascii.nvim",
+    lazy         = true,
+    dependencies = { "MunifTanjim/nui.nvim" },
+  },
+
   {
     "akinsho/bufferline.nvim",
     event  = "BufReadPre",
@@ -94,14 +102,21 @@ return {
     opts = {
       bigfile      = { enabled = true },
       dashboard = {
-        enabled = true,
-        preset  = {
-          header = table.concat({
-            "════════════════════════════════════════",
-            "       ●  N E O V I M  ●       ",
-            "       ▪  akko blossom  ▪       ",
-            "════════════════════════════════════════",
-          }, "\n"),
+        enabled  = true,
+        -- sections is a function so ascii.nvim is required at render time
+        -- (not at plugin-spec evaluation time), giving a random art on every open.
+        sections = function()
+          local ok, art = pcall(require, "ascii")
+          local header  = ok
+            and table.concat(art.get_random("text", "neovim"), "\n")
+            or  "N E O V I M"
+          return {
+            { text = { header, hl = "SnacksDashboardHeader" }, align = "center", padding = { 2, 0 } },
+            { section = "keys", gap = 1, padding = 1 },
+            { section = "startup" },
+          }
+        end,
+        preset = {
           keys = {
             { icon = "▪", key = "f", desc = "Find File",  action = ":lua Snacks.picker.files()"  },
             { icon = "●", key = "r", desc = "Recent",     action = ":lua Snacks.picker.recent()" },
