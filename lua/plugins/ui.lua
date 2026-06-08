@@ -82,6 +82,7 @@ return {
         separator  = "▪",
         group      = "▸ ",
       },
+      spec = require("config.keymaps").which_key_groups,
     },
   },
 

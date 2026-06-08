@@ -46,6 +46,10 @@ function M.setup()
   -- Format
   map("n", "<leader>fm", function() require("conform").format() end, { desc = "Format file" })
 
+  -- Discoverability: fuzzy-search keymaps or help when you forget something
+  map("n", "<leader>?",  function() Snacks.picker.keymaps() end, { desc = "Find: keymaps" })
+  map("n", "<leader>fh", function() Snacks.picker.help() end,    { desc = "Find: help tags" })
+
   -- Diagnostics (global — work in any buffer, not just LSP-attached ones)
   map("n", "<space>e", vim.diagnostic.open_float, { desc = "LSP: show diagnostics" })
   map("n", "[d",       vim.diagnostic.goto_prev,  { desc = "LSP: previous diagnostic" })
@@ -111,6 +115,25 @@ function M.gitsigns(bufnr, gs)
   map("n", "<leader>hp", gs.preview_hunk,                   opts("Git: preview hunk"))
   map("n", "<leader>hl", gs.setloclist,                     opts("Git: hunks to loclist"))
 end
+
+-- ── which-key group labels ──────────────────────────────────────────────────────
+-- Consumed as `spec` in the which-key plugin opts. Tells which-key what to call
+-- each prefix so the popup shows organised namespaces instead of a flat key wall.
+
+M.which_key_groups = {
+  { "<leader>g",  group = "git"         },
+  { "<leader>gp", group = "github"      },
+  { "<leader>r",  group = "rust"        },
+  { "<leader>t",  group = "test"        },
+  { "<leader>d",  group = "debug"       },
+  { "<leader>x",  group = "diagnostics" },
+  { "<leader>c",  group = "code"        },
+  { "<leader>f",  group = "find"        },
+  { "<leader>s",  group = "search"      },
+  { "<leader>k",  group = "kubernetes"  },
+  { "<leader>a",  group = "symbols"     },
+  { "<space>w",   group = "workspace"   },
+}
 
 -- ── Plugin key tables — consumed as `keys = km.X` in plugin specs ─────────────
 -- lazy.nvim reads these at startup to know which keymaps should trigger loading.
