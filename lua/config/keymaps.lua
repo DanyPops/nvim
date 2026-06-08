@@ -67,11 +67,6 @@ function M.lsp(bufnr, client)
   map("n", "K",         vim.lsp.buf.hover,                 opts("LSP: hover docs"))
   map("n", "gi",        vim.lsp.buf.implementation,        opts("LSP: go to implementation"))
   map("n", "<C-k>",     vim.lsp.buf.signature_help,        opts("LSP: signature help"))
-  map("n", "<space>wa", vim.lsp.buf.add_workspace_folder,  opts("LSP: add workspace folder"))
-  map("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, opts("LSP: remove workspace folder"))
-  map("n", "<space>wl", function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, opts("LSP: list workspace folders"))
   map("n",        "<space>D",  vim.lsp.buf.type_definition, opts("LSP: type definition"))
   map("n",        "<space>rn", vim.lsp.buf.rename,          opts("LSP: rename symbol"))
   map({ "n","v" },"<space>ca", vim.lsp.buf.code_action,     opts("LSP: code action"))
@@ -132,7 +127,6 @@ M.which_key_groups = {
   { "<leader>s",  group = "search"      },
   { "<leader>k",  group = "kubernetes"  },
   { "<leader>a",  group = "symbols"     },
-  { "<space>w",   group = "workspace"   },
 }
 
 -- ── Plugin key tables — consumed as `keys = km.X` in plugin specs ─────────────
