@@ -1,17 +1,8 @@
-local km = require("config.keymaps")
+local km    = require("config.keymaps")
+local langs = require("config.languages")
 
 require("nvim-treesitter.configs").setup {
-  ensure_installed = {
-    "lua", "vim", "vimdoc",
-    "typescript", "tsx", "javascript",
-    "html", "css",
-    "go", "python",
-    "rust",
-    "c", "cpp", "zig",
-    "bash",
-    "markdown", "markdown_inline",
-    "json", "yaml", "toml",
-  },
+  ensure_installed = langs.grammars(),
 
   highlight = {
     enable           = true,

@@ -1,4 +1,5 @@
-local km = require("config.keymaps")
+local km    = require("config.keymaps")
+local langs = require("config.languages")
 
 vim.api.nvim_create_autocmd("LspAttach", {
   group    = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
@@ -21,15 +22,7 @@ vim.lsp.config("lua_ls", {
   },
 })
 
-local servers = {
-  "ts_ls",
-  "html",
-  "cssls",
-  "gopls",
-  "zls",
-  "basedpyright",
-  "clangd",
-}
+local servers = langs.lspconfig_servers()
 
 for _, lsp in ipairs(servers) do
   vim.lsp.config(lsp, { capabilities = capabilities })
