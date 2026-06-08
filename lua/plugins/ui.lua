@@ -108,7 +108,7 @@ return {
         sections = function()
           local ok, art = pcall(require, "ascii")
           local header  = ok
-            and table.concat(art.get_random("text", "neovim"), "\n")
+            and table.concat(art.text.neovim.dos_rebel, "\n")
             or  "N E O V I M"
           return {
             { text = { header, hl = "SnacksDashboardHeader" }, align = "center", padding = { 2, 0 } },
