@@ -218,12 +218,21 @@ end
 
 function M.gitsigns(bufnr, gs)
   local opts = function(desc) return { buffer = bufnr, desc = desc } end
-  map("n", "]h",         function() gs.nav_hunk "next" end, opts("Git: next hunk"))
-  map("n", "[h",         function() gs.nav_hunk "prev" end, opts("Git: prev hunk"))
-  map("n", "<leader>hp", gs.preview_hunk,                   opts("Git: preview hunk"))
-  map("n", "<leader>hl", gs.setloclist,                     opts("Git: hunks to loclist"))
-  map("n", "<leader>hd", gs.diff_this,                      opts("Git: diff this file (vs index)"))
-  map("n", "<leader>hD", function() gs.diff_this("~") end,  opts("Git: diff this file (vs HEAD~1)"))
+  map("n",        "]h",         function() gs.nav_hunk "next" end,              opts("Git: next hunk"))
+  map("n",        "[h",         function() gs.nav_hunk "prev" end,              opts("Git: prev hunk"))
+  map("n",        "<leader>hp", gs.preview_hunk,                                opts("Git: preview hunk"))
+  map("n",        "<leader>hi", gs.preview_hunk_inline,                         opts("Git: preview hunk inline"))
+  map("n",        "<leader>hs", gs.stage_hunk,                                  opts("Git: stage hunk"))
+  map("n",        "<leader>hr", gs.reset_hunk,                                  opts("Git: reset hunk"))
+  map("v",        "<leader>hs", function() gs.stage_hunk { vim.fn.line ".", vim.fn.line "v" } end, opts("Git: stage hunk"))
+  map("v",        "<leader>hr", function() gs.reset_hunk { vim.fn.line ".", vim.fn.line "v" } end, opts("Git: reset hunk"))
+  map("n",        "<leader>hS", gs.stage_buffer,                                opts("Git: stage buffer"))
+  map("n",        "<leader>hR", gs.reset_buffer,                                opts("Git: reset buffer"))
+  map("n",        "<leader>hb", gs.blame_line,                                  opts("Git: blame line"))
+  map("n",        "<leader>hl", gs.setloclist,                                  opts("Git: hunks to loclist"))
+  map("n",        "<leader>hd", gs.diff_this,                                   opts("Git: diff this file (vs index)"))
+  map("n",        "<leader>hD", function() gs.diff_this("~") end,               opts("Git: diff this file (vs HEAD~1)"))
+  map({ "o", "x" }, "ih",       gs.select_hunk,                                 opts("Git: select hunk (text object)"))
 end
 
 
