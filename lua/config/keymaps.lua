@@ -76,7 +76,10 @@ function M.setup()
   map("n", "<leader>fC", function() ws_symbols({ filter = { default = { "Class", "Struct", "Interface", "Enum", "TypeParameter" } } }) end,  { desc = "Find: workspace types" })
   map("n", "<leader>fV", function() ws_symbols({ filter = { default = { "Variable", "Constant", "Field", "EnumMember" } } }) end,            { desc = "Find: workspace variables" })
   map("n", "<leader>fT", function() Snacks.picker.tags() end,                  { desc = "Find: tags (ctags, no LSP needed)" })
-  map("n", "<leader>gt", function() Snacks.picker.git_status() end,            { desc = "Git: status (picker)" })
+  map("n", "<leader>gt", function() Snacks.picker.git_status() end,    { desc = "Git: status (picker)" })
+  map("n", "<leader>gg", function() Snacks.lazygit() end,              { desc = "Git: lazygit" })
+  map("n", "<leader>gl", function() Snacks.lazygit.log() end,          { desc = "Git: lazygit log" })
+  map("n", "<leader>gL", function() Snacks.lazygit.log_file() end,     { desc = "Git: lazygit log (file)" })
 
   -- Bufferline
   map("n", "<Tab>",   cmd "BufferLineCycleNext", { desc = "Next buffer" })
@@ -293,10 +296,6 @@ M.octo = {
   { "<leader>gpr", "<cmd>Octo pr list<cr>",      desc = "GitHub: list PRs" },
   { "<leader>gpi", "<cmd>Octo issue list<cr>",   desc = "GitHub: list issues" },
   { "<leader>gpc", "<cmd>Octo review start<cr>", desc = "GitHub: start review" },
-}
-
-M.neogit = {
-  { "<leader>gg", "<cmd>Neogit<cr>", desc = "Git: Neogit" },
 }
 
 M.yaml_companion = {

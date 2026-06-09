@@ -174,6 +174,7 @@ return {
       scope        = { enabled = true },
       scroll       = { enabled = true },
       statuscolumn = { enabled = true },
+      lazygit      = { enabled = true },
       terminal     = { enabled = true },
       words        = { enabled = true },
     },

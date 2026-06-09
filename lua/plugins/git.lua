@@ -29,13 +29,6 @@ return {
   },
 
   {
-    "NeogitOrg/neogit",
-    dependencies = { "nvim-lua/plenary.nvim", "sindrets/diffview.nvim" },
-    config       = true,
-    keys         = km.neogit,
-  },
-
-  {
     "pwntester/octo.nvim",
     dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons" },
     config = function()
