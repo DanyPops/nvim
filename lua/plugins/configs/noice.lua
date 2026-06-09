@@ -26,8 +26,17 @@ require("noice").setup {
 
   notify = { enabled = false },
 
+  -- Route search count (1/N shown when cycling n/N) to a mini popup so it
+  -- doesn't collide with diagnostic virtual text at end-of-line.
+  routes = {
+    {
+      filter = { event = "msg_show", kind = "search_count" },
+      opts   = { view = "mini" },
+    },
+  },
+
   presets = {
-    bottom_search         = true,  -- classic bottom cmdline for search
+    bottom_search         = false, -- use noice-styled search popup for /
     command_palette       = true,  -- cmdline + popupmenu together
     long_message_to_split = true,  -- long messages → split
     inc_rename            = false,
