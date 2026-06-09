@@ -240,7 +240,14 @@ end
 -- lazy.nvim reads these at startup to know which keymaps should trigger loading.
 
 M.diffview = {
-  { "<leader>gd", "<cmd>DiffviewOpen<cr>",        desc = "Git: diff view" },
+  { "<leader>gd", function()
+      local lib = package.loaded["diffview.lib"]
+      if lib and next(lib.views) then
+        vim.cmd("DiffviewClose")
+      else
+        vim.cmd("DiffviewOpen")
+      end
+    end, desc = "Git: toggle diff view" },
   { "<leader>gh", "<cmd>DiffviewFileHistory<cr>",   desc = "Git: repo history" },
   { "<leader>gf", "<cmd>DiffviewFileHistory %<cr>", desc = "Git: file history (current)" },
   { "<leader>gD", function()

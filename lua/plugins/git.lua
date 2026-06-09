@@ -25,16 +25,7 @@ return {
     "sindrets/diffview.nvim",
     cmd  = { "DiffviewOpen", "DiffviewFileHistory", "DiffviewClose" },
     keys = km.diffview,
-    opts = {
-      -- q closes the whole Diffview from any pane.
-      -- diff1/diff2 have no close key by default; file_panel's q only collapses it.
-      keymaps = {
-        diff1              = { { "n", "q", "<cmd>DiffviewClose<cr>", { desc = "Close Diffview" } } },
-        diff2              = { { "n", "q", "<cmd>DiffviewClose<cr>", { desc = "Close Diffview" } } },
-        file_panel         = { { "n", "q", "<cmd>DiffviewClose<cr>", { desc = "Close Diffview" } } },
-        file_history_panel = { { "n", "q", "<cmd>DiffviewClose<cr>", { desc = "Close Diffview" } } },
-      },
-    },
+
   },
 
   {
