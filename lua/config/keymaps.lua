@@ -222,6 +222,8 @@ function M.gitsigns(bufnr, gs)
   map("n", "[h",         function() gs.nav_hunk "prev" end, opts("Git: prev hunk"))
   map("n", "<leader>hp", gs.preview_hunk,                   opts("Git: preview hunk"))
   map("n", "<leader>hl", gs.setloclist,                     opts("Git: hunks to loclist"))
+  map("n", "<leader>hd", gs.diff_this,                      opts("Git: diff this file (vs index)"))
+  map("n", "<leader>hD", function() gs.diff_this("~") end,  opts("Git: diff this file (vs HEAD~1)"))
 end
 
 
@@ -230,7 +232,8 @@ end
 
 M.diffview = {
   { "<leader>gd", "<cmd>DiffviewOpen<cr>",        desc = "Git: diff view" },
-  { "<leader>gh", "<cmd>DiffviewFileHistory<cr>", desc = "Git: file history" },
+  { "<leader>gh", "<cmd>DiffviewFileHistory<cr>",   desc = "Git: repo history" },
+  { "<leader>gf", "<cmd>DiffviewFileHistory %<cr>", desc = "Git: file history (current)" },
   { "<leader>gD", function()
       local remotes = vim.fn.systemlist("git remote")
       local remote  = vim.tbl_contains(remotes, "upstream") and "upstream" or "origin"
