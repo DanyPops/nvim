@@ -82,6 +82,23 @@ return {
   },
 
   {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts  = {
+      icons = {
+        breadcrumb = "●",
+        separator  = "▪",
+        group      = "▸ ",
+      },
+      -- Suppress diffview's internal keymaps from the popup.
+      -- diffview tags them diffview_ignore deliberately; g? is its own help system.
+      filter = function(mapping)
+        return mapping.desc ~= "diffview_ignore"
+      end,
+    },
+  },
+
+  {
     "folke/snacks.nvim",
     priority = 1000,
     lazy     = false,

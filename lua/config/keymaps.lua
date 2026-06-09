@@ -87,10 +87,13 @@ function M.setup()
     map("n", "<C-w>" .. entry[1], "<C-w>" .. entry[1], { desc = entry[2] })
   end
 
-  -- Discoverability — single tool (snacks picker) for all keymap lookup
-  map("n", "<leader>?",  function() Snacks.picker.keymaps({ ["local"] = true, global = false }) end, { desc = "Find: buffer-local keymaps" })
-  map("n", "<leader>fk", function() Snacks.picker.keymaps() end,                                    { desc = "Find: all keymaps" })
-  map("n", "<leader>fh", function() Snacks.picker.help() end,                                       { desc = "Find: help tags" })
+  -- Discoverability
+  -- which-key fires reactively on prefix keystrokes (no explicit invocation).
+  -- ,? shows buffer-local keymaps (LSP/Rust/gitsigns) in which-key's grouped view.
+  -- ,fk fuzzy-searches all keymaps by description via snacks picker.
+  map("n", "<leader>?",  function() require("which-key").show({ global = false }) end, { desc = "Keymaps: buffer-local (which-key)" })
+  map("n", "<leader>fk", function() Snacks.picker.keymaps() end,                     { desc = "Find: keymaps" })
+  map("n", "<leader>fh", function() Snacks.picker.help() end,                         { desc = "Find: help tags" })
 
   -- Passive key history ring buffer — always on, inspect with ,K
   local _key_ring = {}
