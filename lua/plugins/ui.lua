@@ -90,6 +90,9 @@ return {
         separator  = "▪",
         group      = "▸ ",
       },
+      filter = function(mapping)
+        return mapping.desc ~= "diffview_ignore"
+      end,
       spec = require("config.keymaps").which_key_groups,
     },
   },

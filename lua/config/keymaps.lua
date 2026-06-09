@@ -54,6 +54,27 @@ function M.setup()
   map("n", "<leader>fk", function() Snacks.picker.keymaps() end,                     { desc = "Find: keymaps" })
   map("n", "<leader>fh", function() Snacks.picker.help() end,                         { desc = "Find: help tags" })
 
+  -- Passive key history ring buffer — always on, inspect with ,K
+  local _key_ring = {}
+  local _ring_max  = 50
+  vim.on_key(function(key)
+    local k = vim.fn.keytrans(key)
+    if k == "" then return end
+    _key_ring[#_key_ring + 1] = k
+    if #_key_ring > _ring_max then table.remove(_key_ring, 1) end
+  end, vim.api.nvim_create_namespace("keylog"))
+  map("n", "<leader>K", function()
+    if #_key_ring == 0 then
+      vim.notify("Key history: empty", vim.log.levels.INFO)
+      return
+    end
+    local lines = {}
+    for i = #_key_ring, 1, -1 do
+      lines[#lines + 1] = string.format(" %3d  %s", #_key_ring - i, _key_ring[i])
+    end
+    vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO)
+  end, { desc = "Keys: show history" })
+
   -- Diagnostics (global — work in any buffer, not just LSP-attached ones)
   map("n", "<space>e", vim.diagnostic.open_float, { desc = "LSP: diagnostic float" })
   map("n", "[d",       vim.diagnostic.goto_prev,  { desc = "LSP: prev diagnostic" })
