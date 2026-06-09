@@ -46,13 +46,10 @@ function M.setup()
   -- Format
   map("n", "<leader>fm", function() require("conform").format() end, { desc = "Format file" })
 
-  -- Discoverability
-  -- <leader>? — which-key popup for every buffer-local keymap (gd, gr, rust, gitsigns…)
-  --             Shows the organised grouped view, not just the , prefix.
-  map("n", "<leader>?",  function() require("which-key").show({ global = false }) end, { desc = "Keymaps: buffer-local (which-key)" })
-  -- <leader>fk — fuzzy search all keymaps by description when you remember the concept
-  map("n", "<leader>fk", function() Snacks.picker.keymaps() end,                     { desc = "Find: keymaps" })
-  map("n", "<leader>fh", function() Snacks.picker.help() end,                         { desc = "Find: help tags" })
+  -- Discoverability — single tool (snacks picker) for all keymap lookup
+  map("n", "<leader>?",  function() Snacks.picker.keymaps({ ["local"] = true, global = false }) end, { desc = "Find: buffer-local keymaps" })
+  map("n", "<leader>fk", function() Snacks.picker.keymaps() end,                                    { desc = "Find: all keymaps" })
+  map("n", "<leader>fh", function() Snacks.picker.help() end,                                       { desc = "Find: help tags" })
 
   -- Passive key history ring buffer — always on, inspect with ,K
   local _key_ring = {}
@@ -139,23 +136,6 @@ function M.gitsigns(bufnr, gs)
   map("n", "<leader>hl", gs.setloclist,                     opts("Git: hunks to loclist"))
 end
 
--- ── which-key group labels ──────────────────────────────────────────────────────
--- Consumed as `spec` in the which-key plugin opts. Tells which-key what to call
--- each prefix so the popup shows organised namespaces instead of a flat key wall.
-
-M.which_key_groups = {
-  { "<leader>g",  group = "git"         },
-  { "<leader>gp", group = "github"      },
-  { "<leader>r",  group = "rust"        },
-  { "<leader>t",  group = "test"        },
-  { "<leader>d",  group = "debug"       },
-  { "<leader>x",  group = "diagnostics" },
-  { "<leader>c",  group = "code"        },
-  { "<leader>f",  group = "find"        },
-  { "<leader>s",  group = "search"      },
-  { "<leader>k",  group = "kubernetes"  },
-  { "<leader>a",  group = "symbols"     },
-}
 
 -- ── Plugin key tables — consumed as `keys = km.X` in plugin specs ─────────────
 -- lazy.nvim reads these at startup to know which keymaps should trigger loading.

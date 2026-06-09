@@ -82,22 +82,6 @@ return {
   },
 
   {
-    "folke/which-key.nvim",
-    event = "VeryLazy",
-    opts  = {
-      icons = {
-        breadcrumb = "●",
-        separator  = "▪",
-        group      = "▸ ",
-      },
-      filter = function(mapping)
-        return mapping.desc ~= "diffview_ignore"
-      end,
-      spec = require("config.keymaps").which_key_groups,
-    },
-  },
-
-  {
     "folke/snacks.nvim",
     priority = 1000,
     lazy     = false,
