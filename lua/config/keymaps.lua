@@ -46,6 +46,21 @@ function M.setup()
   -- Format
   map("n", "<leader>fm", function() require("conform").format() end, { desc = "Format file" })
 
+  -- Window navigation — <C-hjkl> is standard; without these the native <C-w>h etc.
+  -- have no desc and are invisible to Snacks.picker.keymaps().
+  map("n", "<C-h>", "<C-w>h", { desc = "Window: go left" })
+  map("n", "<C-j>", "<C-w>j", { desc = "Window: go down" })
+  map("n", "<C-k>", "<C-w>k", { desc = "Window: go up" })
+  map("n", "<C-l>", "<C-w>l", { desc = "Window: go right" })
+
+  -- Window resize / layout — re-registered to add desc and appear in picker.
+  map("n", "<C-w>_", "<C-w>_", { desc = "Window: maximize height" })
+  map("n", "<C-w>|", "<C-w>|", { desc = "Window: maximize width" })
+  map("n", "<C-w>=", "<C-w>=", { desc = "Window: equalize all" })
+  map("n", "<C-w>o", "<C-w>o", { desc = "Window: close others (only)" })
+  map("n", "<C-w>s", "<C-w>s", { desc = "Window: split horizontal" })
+  map("n", "<C-w>v", "<C-w>v", { desc = "Window: split vertical" })
+
   -- Discoverability — single tool (snacks picker) for all keymap lookup
   map("n", "<leader>?",  function() Snacks.picker.keymaps({ ["local"] = true, global = false }) end, { desc = "Find: buffer-local keymaps" })
   map("n", "<leader>fk", function() Snacks.picker.keymaps() end,                                    { desc = "Find: all keymaps" })

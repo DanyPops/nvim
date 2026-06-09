@@ -120,7 +120,9 @@ return {
         enabled = true,
         sources = {
           -- ivy = full-width bottom strip; description column no longer truncated
-          keymaps = { layout = { preset = "ivy" } },
+          -- preview = false: preview panel was eating ~50% of width, truncating descriptions.
+          -- ivy layout uses full terminal width for the list.
+          keymaps = { preview = false, layout = { preset = "ivy" } },
         },
       },
       notifier     = { enabled = true },
