@@ -46,20 +46,46 @@ function M.setup()
   -- Format
   map("n", "<leader>fm", function() require("conform").format() end, { desc = "Format file" })
 
-  -- Window navigation — <C-hjkl> is standard; without these the native <C-w>h etc.
-  -- have no desc and are invisible to Snacks.picker.keymaps().
+  -- Window navigation — <C-hjkl> ergonomic aliases for <C-w>hjkl.
   map("n", "<C-h>", "<C-w>h", { desc = "Window: go left" })
   map("n", "<C-j>", "<C-w>j", { desc = "Window: go down" })
   map("n", "<C-k>", "<C-w>k", { desc = "Window: go up" })
   map("n", "<C-l>", "<C-w>l", { desc = "Window: go right" })
 
-  -- Window resize / layout — re-registered to add desc and appear in picker.
-  map("n", "<C-w>_", "<C-w>_", { desc = "Window: maximize height" })
-  map("n", "<C-w>|", "<C-w>|", { desc = "Window: maximize width" })
-  map("n", "<C-w>=", "<C-w>=", { desc = "Window: equalize all" })
-  map("n", "<C-w>o", "<C-w>o", { desc = "Window: close others (only)" })
-  map("n", "<C-w>s", "<C-w>s", { desc = "Window: split horizontal" })
-  map("n", "<C-w>v", "<C-w>v", { desc = "Window: split vertical" })
+  -- Window keymaps extracted from $VIMRUNTIME/doc/windows.txt.
+  -- <C-w>* built-ins are C switch cases with no Lua desc — invisible to the
+  -- keymaps picker unless re-registered. Descriptions from the TAB-separated
+  -- entries in windows.txt (same source as :help CTRL-W_*).
+  local cw = {
+    { "_", "Set current window height to N (default: highest possible)" },
+    { "|", "Set current window width to N (default: widest possible)"  },
+    { "=", "Make all windows equally high and wide"                    },
+    { "+", "Increase current window height by N"                      },
+    { "-", "Decrease current window height by N"                      },
+    { ">", "Increase current window width by N"                       },
+    { "<", "Decrease current window width by N"                       },
+    { "o", "Make current window the only one (close others)"          },
+    { "s", "Split current window horizontally"                        },
+    { "v", "Split current window vertically"                          },
+    { "n", "Create new window and edit empty file"                    },
+    { "q", "Quit current window"                                      },
+    { "c", "Close current window"                                     },
+    { "w", "Move cursor to next focusable window"                     },
+    { "W", "Move cursor to previous focusable window"                 },
+    { "p", "Go to previous (last accessed) window"                    },
+    { "r", "Rotate windows downwards / rightwards"                    },
+    { "R", "Rotate windows upwards / leftwards"                       },
+    { "x", "Exchange current window with next"                        },
+    { "H", "Move current window to far left"                          },
+    { "J", "Move current window to very bottom"                       },
+    { "K", "Move current window to very top"                          },
+    { "L", "Move current window to far right"                         },
+    { "T", "Move current window to a new tab page"                    },
+    { "^", "Split and edit the alternate file"                        },
+  }
+  for _, entry in ipairs(cw) do
+    map("n", "<C-w>" .. entry[1], "<C-w>" .. entry[1], { desc = entry[2] })
+  end
 
   -- Discoverability — single tool (snacks picker) for all keymap lookup
   map("n", "<leader>?",  function() Snacks.picker.keymaps({ ["local"] = true, global = false }) end, { desc = "Find: buffer-local keymaps" })
