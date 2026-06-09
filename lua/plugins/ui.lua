@@ -39,7 +39,10 @@ return {
               trunc_width = 75,
               signs       = { ERROR = "■", WARN = "▲", INFO = "●", HINT = "◆" },
             })
-            local lsp          = M.section_lsp({ trunc_width = 75 })
+            -- vim.lsp.status() reads $/progress from all running clients
+            -- (attach=false included). Non-empty only during workspace indexing.
+            local indexing     = vim.lsp.status()
+            local lsp          = indexing ~= "" and indexing or M.section_lsp({ trunc_width = 75 })
             local fname        = M.section_filename({ trunc_width = 140 })
             local finfo        = M.section_fileinfo({ trunc_width = 120 })
             local location     = M.section_location({ trunc_width = 75 })
@@ -140,6 +143,30 @@ return {
           -- preview = false: preview panel was eating ~50% of width, truncating descriptions.
           -- ivy layout uses full terminal width for the list.
           keymaps = { preview = false, layout = { preset = "ivy" } },
+
+          -- Stacked vertical: list on top (full terminal width → paths never clip),
+          -- preview on bottom. Mirrors the user story: type a substring, scan
+          -- the full qualified path, preview the definition site.
+          lsp_workspace_symbols = {
+            -- Outer table = layout config object (matches the shape presets use).
+            -- Inner table = the actual root box definition; without this wrapping
+            -- Snacks' resolver cannot find layout.layout[1] and asserts "no root box found".
+            layout = {
+              layout = {
+                box       = "vertical",
+                backdrop  = false,
+                width     = 0,
+                height    = 0.65,
+                row       = -1,
+                border    = "top",
+                title     = " {title} {live} {flags}",
+                title_pos = "left",
+                { win = "input",   height = 1,   border = "bottom" },
+                { win = "list",    border = "none" },
+                { win = "preview", title = "{preview}", height = 0.45, border = "top" },
+              },
+            },
+          },
         },
       },
       notifier     = { enabled = true },

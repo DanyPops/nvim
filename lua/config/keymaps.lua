@@ -5,6 +5,44 @@ vim.g.maplocalleader = "\\"
 local M   = {}
 local map = vim.keymap.set
 
+-- workspace/symbol is workspace-scoped (LSP spec §3.17.15) — no open document
+-- required. Snacks filters clients by bufnr internally, so we find or create a
+-- buffer the target client is attached to before invoking the picker.
+local function ws_symbols(opts)
+  if #vim.lsp.get_clients({ bufnr = vim.api.nvim_get_current_buf() }) > 0 then
+    return Snacks.picker.lsp_workspace_symbols(opts)
+  end
+
+  local langs  = require("config.languages")
+  local ft_map = { lua_ls = "lua" }
+  for _, e in ipairs(langs.servers_with_ft()) do ft_map[e.lsp] = e.ft end
+
+  for _, client in ipairs(vim.lsp.get_clients()) do
+    if not (client.initialized and client:supports_method("workspace/symbol")) then
+      goto continue
+    end
+
+    local bufs = vim.tbl_keys(client.attached_buffers)
+    if #bufs > 0 then
+      vim.api.nvim_buf_call(bufs[1], function() Snacks.picker.lsp_workspace_symbols(opts) end)
+      return
+    end
+
+    local ft = ft_map[client.name]
+    if ft and client.root_dir then
+      local anchor = vim.fn.bufadd(client.root_dir .. "/.lsp_eager." .. ft)
+      vim.fn.bufload(anchor)
+      vim.lsp.buf_attach_client(anchor, client.id)
+      vim.api.nvim_buf_call(anchor, function() Snacks.picker.lsp_workspace_symbols(opts) end)
+      return
+    end
+
+    ::continue::
+  end
+
+  vim.notify("LSP: no workspace/symbol client — open a file first", vim.log.levels.INFO)
+end
+
 -- ── Global keymaps ────────────────────────────────────────────────────────────
 -- Called once from init.lua before lazy loads plugins.
 
@@ -31,8 +69,14 @@ function M.setup()
   -- Snacks picker
   map("n", "<leader>ff", function() Snacks.picker.files() end,      { desc = "Find: files" })
   map("n", "<leader>fo", function() Snacks.picker.recent() end,     { desc = "Find: recent files" })
-  map("n", "<leader>fw", function() Snacks.picker.grep() end,       { desc = "Find: live grep" })
-  map("n", "<leader>gt", function() Snacks.picker.git_status() end, { desc = "Git: status (picker)" })
+  map("n", "<leader>fw", function() Snacks.picker.grep() end,                       { desc = "Find: live grep" })
+  map("n", "<leader>fs", function() Snacks.picker.lsp_symbols() end,           { desc = "Find: document symbols (LSP)" })
+  map("n", "<leader>fS", function() ws_symbols() end,                                                                                       { desc = "Find: workspace symbols" })
+  map("n", "<leader>fF", function() ws_symbols({ filter = { default = { "Function", "Method", "Constructor" } } }) end,                      { desc = "Find: workspace functions" })
+  map("n", "<leader>fC", function() ws_symbols({ filter = { default = { "Class", "Struct", "Interface", "Enum", "TypeParameter" } } }) end,  { desc = "Find: workspace types" })
+  map("n", "<leader>fV", function() ws_symbols({ filter = { default = { "Variable", "Constant", "Field", "EnumMember" } } }) end,            { desc = "Find: workspace variables" })
+  map("n", "<leader>fT", function() Snacks.picker.tags() end,                  { desc = "Find: tags (ctags, no LSP needed)" })
+  map("n", "<leader>gt", function() Snacks.picker.git_status() end,            { desc = "Git: status (picker)" })
 
   -- Bufferline
   map("n", "<Tab>",   cmd "BufferLineCycleNext", { desc = "Next buffer" })
