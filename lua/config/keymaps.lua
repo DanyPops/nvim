@@ -230,8 +230,8 @@ function M.gitsigns(bufnr, gs)
   map("n",        "<leader>hR", gs.reset_buffer,                                opts("Git: reset buffer"))
   map("n",        "<leader>hb", gs.blame_line,                                  opts("Git: blame line"))
   map("n",        "<leader>hl", gs.setloclist,                                  opts("Git: hunks to loclist"))
-  map("n",        "<leader>hd", gs.diff_this,                                   opts("Git: diff this file (vs index)"))
-  map("n",        "<leader>hD", function() gs.diff_this("~") end,               opts("Git: diff this file (vs HEAD~1)"))
+  map("n",        "<leader>hd", gs.diffthis,                                    opts("Git: diff this file (vs index)"))
+  map("n",        "<leader>hD", function() gs.diffthis("~") end,                opts("Git: diff this file (vs HEAD~1)"))
   map({ "o", "x" }, "ih",       gs.select_hunk,                                 opts("Git: select hunk (text object)"))
 end
 

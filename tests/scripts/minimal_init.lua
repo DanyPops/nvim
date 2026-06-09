@@ -1,8 +1,11 @@
 -- Minimal init for headless test runs.
--- Loads the real config but skips interactive startup side-effects.
--- Run via: nvim --headless --noplugin -u tests/scripts/minimal_init.lua
+-- Resolves deps/mini.nvim relative to the config root, not stdpath("data"),
+-- so this works before lazy.nvim has run or synced anything.
 
-vim.env.LAZY_STDPATH = "/tmp/nvim-test-data"
-vim.opt.rtp:prepend(vim.fn.stdpath("data") .. "/lazy/mini.nvim")
+local config_root = vim.fn.fnamemodify(
+  debug.getinfo(1, "S").source:sub(2), -- strip leading "@"
+  ":p:h:h:h"                           -- file → scripts/ → tests/ → config/
+)
 
+vim.opt.rtp:prepend(config_root .. "/deps/mini.nvim")
 require("mini.test").setup()
