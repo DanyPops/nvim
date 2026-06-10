@@ -12,6 +12,7 @@ require("lazy").setup(
     require "plugins.ui",
     require "plugins.git",
     require "plugins.lsp",
+    require "plugins.visual",
     require "plugins.editing",
     require "plugins.languages.go",
     require "plugins.languages.rust",

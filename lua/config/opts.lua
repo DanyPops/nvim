@@ -31,8 +31,19 @@ opt.smartcase = true
 opt.mouse = "a"
 
 -- Numbers
-opt.number = true
-opt.ruler = false
+-- Hybrid mode: absolute on the current line, relative on others.
+-- Relative numbers make vertical jumps spatial rather than arithmetic.
+opt.number         = true
+opt.relativenumber = true
+opt.ruler          = false
+
+-- Visual anchoring
+opt.cursorline = true   -- horizontal highlight: always know which line you're on
+
+-- Word-boundary wrapping: long lines wrap at word edges and re-indent to
+-- match the start column, so wrapped prose/comments stay legible as blocks.
+opt.linebreak   = true
+opt.breakindent = true
 
 opt.signcolumn = "yes"
 opt.splitbelow = true
@@ -88,6 +99,27 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "DiffChange", { bg = "#28231b" })
     vim.api.nvim_set_hl(0, "DiffDelete", { bg = "#281b1c" })
     vim.api.nvim_set_hl(0, "DiffText",   { bg = "#352c1d", bold = true })
+
+    -- Rainbow delimiter hues — nesting depth reads as a colour gradient.
+    -- Colours are akko palette anchors (same hue family as syntax tokens):
+    --   depth 1  leaf      hsl(155,30,62)  #72b89e
+    --   depth 2  sky       hsl(207,35,62)  #74a2c0
+    --   depth 3  gold      hsl( 38,55,60)  #d09e48
+    --   depth 4  blossom   hsl(352,55,65)  #d4728a
+    --   depth 5  cloud     hsl(207,20,74)  #a4bccc
+    --   depth 6  frond     hsl(155,22,72)  #9dc4b8
+    vim.api.nvim_set_hl(0, "RainbowDelimiterGreen",  { fg = "#72b89e" })
+    vim.api.nvim_set_hl(0, "RainbowDelimiterBlue",   { fg = "#74a2c0" })
+    vim.api.nvim_set_hl(0, "RainbowDelimiterYellow", { fg = "#d09e48" })
+    vim.api.nvim_set_hl(0, "RainbowDelimiterRed",    { fg = "#d4728a" })
+    vim.api.nvim_set_hl(0, "RainbowDelimiterCyan",   { fg = "#a4bccc" })
+    vim.api.nvim_set_hl(0, "RainbowDelimiterViolet", { fg = "#9dc4b8" })
+
+    -- Treesitter context header: bg2 strip gives the sticky header a distinct
+    -- panel feel without competing with syntax colours below it.
+    vim.api.nvim_set_hl(0, "TreesitterContext",           { bg = "#261a20" })
+    vim.api.nvim_set_hl(0, "TreesitterContextLineNumber", { bg = "#261a20", fg = "#a29098" })
+    vim.api.nvim_set_hl(0, "TreesitterContextSeparator",  { fg = "#4e3a44" })
   end,
 })
 
