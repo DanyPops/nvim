@@ -6,9 +6,33 @@ test: deps/mini.nvim
 	  -u tests/scripts/minimal_init.lua \
 	  -c "lua MiniTest.run({ execute = { reporter = MiniTest.gen_reporter.stdout({ group_depth = 1 }) } })"
 
-# Smoke: load the real config, exit immediately, print any Lua errors.
+# Smoke: load the real config with plugins, open a real file, move the cursor
+# (triggers CursorMoved → snacks.scope, treesitter-context, rainbow-delimiters),
+# then collect any errors. Headless does not fire UI events, so we drive them
+# explicitly via vim.api.nvim_input after plugin startup settles.
+SMOKE_SCRIPT := $(shell mktemp /tmp/nvim-smoke-XXXXXX.lua)
 smoke:
-	@nvim --headless -c "quit" 2>&1 | grep -E "^E[0-9]+|Error|error" && exit 1 || echo "smoke: OK"
+	@printf '%s\n' \
+	  'local log = "/tmp/nvim-smoke-errors.log"' \
+	  'local orig = vim.notify' \
+	  'vim.notify = function(msg, level, opts)' \
+	  '  if level and level >= vim.log.levels.ERROR then' \
+	  '    local f = io.open(log, "a") if f then f:write(msg .. "\n") f:close() end' \
+	  '  end' \
+	  '  orig(msg, level, opts)' \
+	  'end' \
+	  'vim.defer_fn(function()' \
+	  '  vim.cmd("edit /tmp/nvim-smoke-test.rs")' \
+	  '  vim.defer_fn(function()' \
+	  '    vim.api.nvim_input("Gjkjkjk")' \
+	  '    vim.defer_fn(function() vim.cmd("qa!") end, 2000)' \
+	  '  end, 2000)' \
+	  'end, 3000)' > $(SMOKE_SCRIPT)
+	@printf 'fn main() { let x = vec![1,2,3]; }\n' > /tmp/nvim-smoke-test.rs
+	@rm -f /tmp/nvim-smoke-errors.log
+	@nvim --headless -S $(SMOKE_SCRIPT) 2>/tmp/nvim-smoke-stderr.log || true
+	@rm -f $(SMOKE_SCRIPT)
+	@{ cat /tmp/nvim-smoke-errors.log 2>/dev/null; grep -E "Error|error" /tmp/nvim-smoke-stderr.log 2>/dev/null | grep -v deprecated; } | grep . && exit 1 || echo "smoke: OK"
 
 deps/mini.nvim:
 	@mkdir -p deps
