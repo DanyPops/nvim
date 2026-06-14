@@ -3,8 +3,12 @@ local km = require("config.keymaps")
 return {
   {
     "nvim-treesitter/nvim-treesitter",
+    branch       = "main",
+    lazy         = false,
     build        = ":TSUpdate",
-    dependencies = { "nvim-treesitter/nvim-treesitter-textobjects" },
+    dependencies = {
+      { "nvim-treesitter/nvim-treesitter-textobjects", branch = "main" },
+    },
     config       = function() require "plugins.configs.treesitter" end,
   },
 
