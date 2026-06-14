@@ -20,7 +20,7 @@ local specs = {
   { ft = "c",          grammar = "c",                      formatter = "clang-format", lsp = "clangd",      root_hint = { ".clangd", ".clang-format", "compile_commands.json", "compile_flags.txt" } },
   { ft = "cpp",        grammar = "cpp",                    formatter = "clang-format"  },
   { ft = "zig",        grammar = "zig",                    formatter = "zigfmt",       lsp = "zls",         root_hint = { "build.zig", "zls.json" } },
-  { ft = "yaml",       grammar = "yaml",                   formatter = "yamlfmt",      linter = "yamllint",   mason = "yamlls" },
+  { ft = "yaml",       grammar = "yaml",                   formatter = "yamlfmt",      linter = "yamllint",   lsp = "yamlls" },
   { ft = "html",       grammar = "html",                                               lsp = "html"         },
   { ft = "css",        grammar = "css",                                                lsp = "cssls"        },
   -- Grammar-only: treesitter highlighting with no separate filetype tooling
@@ -69,8 +69,8 @@ function M.linters_by_ft()
 end
 
 -- { lsp, ft, root_hint? } for each server that should be started eagerly when
--- opening a directory. Excludes servers with no root_hint (html, cssls) and
--- mason-only entries (rust_analyzer, yamlls).
+-- opening a directory. Excludes servers with no root_hint (html, cssls, yamlls)
+-- and mason-only entries (rust_analyzer).
 function M.servers_with_ft()
   local out, seen = {}, {}
   for _, s in ipairs(specs) do

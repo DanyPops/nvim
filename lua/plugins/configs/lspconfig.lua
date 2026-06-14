@@ -24,8 +24,29 @@ vim.lsp.config("lua_ls", {
 
 local servers = langs.lspconfig_servers()
 
+local server_configs = {
+  yamlls = {
+    capabilities = capabilities,
+    filetypes = { "yaml" },
+    settings = {
+      redhat = { telemetry = { enabled = false } },
+      yaml = {
+        validate       = true,
+        format         = { enable = true },
+        hover          = true,
+        schemaDownload = { enable = true },
+        schemaStore    = {
+          enable = true,
+          url    = "https://www.schemastore.org/api/json/catalog.json",
+        },
+        schemas        = {},
+      },
+    },
+  },
+}
+
 for _, lsp in ipairs(servers) do
-  vim.lsp.config(lsp, { capabilities = capabilities })
+  vim.lsp.config(lsp, server_configs[lsp] or { capabilities = capabilities })
 end
 
 vim.lsp.enable(vim.list_extend({ "lua_ls" }, servers))

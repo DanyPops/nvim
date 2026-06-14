@@ -1,5 +1,11 @@
 local opt = vim.opt
 
+vim.filetype.add({
+  extension = {
+    gotmpl = "gotmpl",
+  },
+})
+
 opt.laststatus = 3 -- global statusline
 opt.showmode = false
 
@@ -122,4 +128,3 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "TreesitterContextSeparator",  { fg = "#4e3a44" })
   end,
 })
-

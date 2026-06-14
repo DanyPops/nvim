@@ -49,7 +49,7 @@ return {
   },
 
   -- Skeleton folding: collapse every function body to reveal the file's
-  -- structural shape. Provider chain: LSP (precise) → treesitter → indent.
+  -- structural shape. Provider chain: LSP (precise) → indent.
   --
   --   zM — skeleton view (close all)
   --   zR — full expand (open all)

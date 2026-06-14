@@ -165,8 +165,8 @@ function M.setup()
 
   -- Diagnostics (global — work in any buffer, not just LSP-attached ones)
   map("n", "<space>e", vim.diagnostic.open_float, { desc = "LSP: diagnostic float" })
-  map("n", "[d",       vim.diagnostic.goto_prev,  { desc = "LSP: prev diagnostic" })
-  map("n", "]d",       vim.diagnostic.goto_next,  { desc = "LSP: next diagnostic" })
+  map("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, { desc = "LSP: prev diagnostic" })
+  map("n", "]d", function() vim.diagnostic.jump({ count = 1,  float = true }) end, { desc = "LSP: next diagnostic" })
 end
 
 -- ── LSP — buffer-local, called from LspAttach ─────────────────────────────────
@@ -298,10 +298,6 @@ M.octo = {
   { "<leader>gpc", "<cmd>Octo review start<cr>", desc = "GitHub: start review" },
 }
 
-M.yaml_companion = {
-  { "<leader>ky", "<cmd>lua require('yaml-companion').open_ui_select()<cr>", desc = "YAML: select schema" },
-}
-
 M.neotest = {
   { "<leader>tr", function() require("neotest").run.run() end,                     desc = "Test: run nearest" },
   { "<leader>tR", function() require("neotest").run.run(vim.fn.expand("%")) end,   desc = "Test: run file" },
@@ -323,8 +319,8 @@ M.dap = {
 }
 
 -- ── Treesitter textobject definitions ─────────────────────────────────────────
--- Not vim.keymap.set calls — these are treesitter query bindings consumed
--- by nvim-treesitter-textobjects. Returned as a table, used in treesitter config.
+-- Query bindings consumed by plugins.configs.treesitter, which turns them into
+-- explicit nvim-treesitter-textobjects keymaps.
 
 M.treesitter_textobjects = {
   select = {

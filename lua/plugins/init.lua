@@ -16,7 +16,6 @@ require("lazy").setup(
     require "plugins.editing",
     require "plugins.languages.go",
     require "plugins.languages.rust",
-    require "plugins.languages.yaml",
     require "plugins.languages.testing",
   },
   require "plugins.configs.lazy"
