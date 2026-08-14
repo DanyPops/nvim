@@ -5,42 +5,13 @@ vim.g.maplocalleader = "\\"
 local M   = {}
 local map = vim.keymap.set
 
--- workspace/symbol is workspace-scoped (LSP spec §3.17.15) — no open document
--- required. Snacks filters clients by bufnr internally, so we find or create a
--- buffer the target client is attached to before invoking the picker.
-local function ws_symbols(opts)
-  if #vim.lsp.get_clients({ bufnr = vim.api.nvim_get_current_buf() }) > 0 then
-    return Snacks.picker.lsp_workspace_symbols(opts)
-  end
+local function picker(source, opts)
+  return function() Snacks.picker[source](opts) end
+end
 
-  local langs  = require("config.languages")
-  local ft_map = { lua_ls = "lua" }
-  for _, e in ipairs(langs.servers_with_ft()) do ft_map[e.lsp] = e.ft end
-
-  for _, client in ipairs(vim.lsp.get_clients()) do
-    if not (client.initialized and client:supports_method("workspace/symbol")) then
-      goto continue
-    end
-
-    local bufs = vim.tbl_keys(client.attached_buffers)
-    if #bufs > 0 then
-      vim.api.nvim_buf_call(bufs[1], function() Snacks.picker.lsp_workspace_symbols(opts) end)
-      return
-    end
-
-    local ft = ft_map[client.name]
-    if ft and client.root_dir then
-      local anchor = vim.fn.bufadd(client.root_dir .. "/.lsp_eager." .. ft)
-      vim.fn.bufload(anchor)
-      vim.lsp.buf_attach_client(anchor, client.id)
-      vim.api.nvim_buf_call(anchor, function() Snacks.picker.lsp_workspace_symbols(opts) end)
-      return
-    end
-
-    ::continue::
-  end
-
-  vim.notify("LSP: no workspace/symbol client — open a file first", vim.log.levels.INFO)
+local function ws_symbols(kinds)
+  local opts = kinds and { filter = { default = kinds } } or nil
+  return picker("lsp_workspace_symbols", opts)
 end
 
 -- ── Global keymaps ────────────────────────────────────────────────────────────
@@ -67,16 +38,16 @@ function M.setup()
   map("n", "<leader>p", cmd "Oil", { desc = "Open Oil file explorer" })
 
   -- Snacks picker
-  map("n", "<leader>ff", function() Snacks.picker.files() end,      { desc = "Find: files" })
-  map("n", "<leader>fo", function() Snacks.picker.recent() end,     { desc = "Find: recent files" })
-  map("n", "<leader>fw", function() Snacks.picker.grep() end,                       { desc = "Find: live grep" })
-  map("n", "<leader>fs", function() Snacks.picker.lsp_symbols() end,           { desc = "Find: document symbols (LSP)" })
-  map("n", "<leader>fS", function() ws_symbols() end,                                                                                       { desc = "Find: workspace symbols" })
-  map("n", "<leader>fF", function() ws_symbols({ filter = { default = { "Function", "Method", "Constructor" } } }) end,                      { desc = "Find: workspace functions" })
-  map("n", "<leader>fC", function() ws_symbols({ filter = { default = { "Class", "Struct", "Interface", "Enum", "TypeParameter" } } }) end,  { desc = "Find: workspace types" })
-  map("n", "<leader>fV", function() ws_symbols({ filter = { default = { "Variable", "Constant", "Field", "EnumMember" } } }) end,            { desc = "Find: workspace variables" })
-  map("n", "<leader>fT", function() Snacks.picker.tags() end,                  { desc = "Find: tags (ctags, no LSP needed)" })
-  map("n", "<leader>gt", function() Snacks.picker.git_status() end,    { desc = "Git: status (picker)" })
+  map("n", "<leader>ff", picker("files"),       { desc = "Find: files" })
+  map("n", "<leader>fo", picker("recent"),      { desc = "Find: recent files" })
+  map("n", "<leader>fw", picker("grep"),        { desc = "Find: live grep" })
+  map("n", "<leader>fs", picker("lsp_symbols"), { desc = "Find: document symbols (LSP)" })
+  map("n", "<leader>fS", ws_symbols(),          { desc = "Find: workspace symbols" })
+  map("n", "<leader>fF", ws_symbols({ "Function", "Method", "Constructor" }),                    { desc = "Find: workspace functions" })
+  map("n", "<leader>fC", ws_symbols({ "Class", "Struct", "Interface", "Enum", "TypeParameter" }), { desc = "Find: workspace types" })
+  map("n", "<leader>fV", ws_symbols({ "Variable", "Constant", "Field", "EnumMember" }),           { desc = "Find: workspace variables" })
+  map("n", "<leader>fT", picker("tags"),        { desc = "Find: tags (ctags, no LSP needed)" })
+  map("n", "<leader>gt", picker("git_status"),  { desc = "Git: status (picker)" })
   map("n", "<leader>gg", function() Snacks.lazygit() end,              { desc = "Git: lazygit" })
   map("n", "<leader>gl", function() Snacks.lazygit.log() end,          { desc = "Git: lazygit log" })
   map("n", "<leader>gL", function() Snacks.lazygit.log_file() end,     { desc = "Git: lazygit log (file)" })
@@ -99,10 +70,7 @@ function M.setup()
   map("n", "<C-k>", "<C-w>k", { desc = "Window: go up" })
   map("n", "<C-l>", "<C-w>l", { desc = "Window: go right" })
 
-  -- Window keymaps extracted from $VIMRUNTIME/doc/windows.txt.
-  -- <C-w>* built-ins are C switch cases with no Lua desc — invisible to the
-  -- keymaps picker unless re-registered. Descriptions from the TAB-separated
-  -- entries in windows.txt (same source as :help CTRL-W_*).
+  -- Add descriptions to otherwise undiscoverable built-in window keymaps.
   local cw = {
     { "_", "Set current window height to N (default: highest possible)" },
     { "|", "Set current window width to N (default: widest possible)"  },
@@ -134,34 +102,10 @@ function M.setup()
     map("n", "<C-w>" .. entry[1], "<C-w>" .. entry[1], { desc = entry[2] })
   end
 
-  -- Discoverability
-  -- which-key fires reactively on prefix keystrokes (no explicit invocation).
-  -- ,? shows buffer-local keymaps (LSP/Rust/gitsigns) in which-key's grouped view.
-  -- ,fk fuzzy-searches all keymaps by description via snacks picker.
+  -- Keymap discovery.
   map("n", "<leader>?",  function() require("which-key").show({ global = false }) end, { desc = "Keymaps: buffer-local (which-key)" })
-  map("n", "<leader>fk", function() Snacks.picker.keymaps() end,                     { desc = "Find: keymaps" })
-  map("n", "<leader>fh", function() Snacks.picker.help() end,                         { desc = "Find: help tags" })
-
-  -- Passive key history ring buffer — always on, inspect with ,K
-  local _key_ring = {}
-  local _ring_max  = 50
-  vim.on_key(function(key)
-    local k = vim.fn.keytrans(key)
-    if k == "" then return end
-    _key_ring[#_key_ring + 1] = k
-    if #_key_ring > _ring_max then table.remove(_key_ring, 1) end
-  end, vim.api.nvim_create_namespace("keylog"))
-  map("n", "<leader>K", function()
-    if #_key_ring == 0 then
-      vim.notify("Key history: empty", vim.log.levels.INFO)
-      return
-    end
-    local lines = {}
-    for i = #_key_ring, 1, -1 do
-      lines[#lines + 1] = string.format(" %3d  %s", #_key_ring - i, _key_ring[i])
-    end
-    vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO)
-  end, { desc = "Keys: show history" })
+  map("n", "<leader>fk", picker("keymaps"), { desc = "Find: keymaps" })
+  map("n", "<leader>fh", picker("help"),    { desc = "Find: help tags" })
 
   -- Diagnostics (global — work in any buffer, not just LSP-attached ones)
   map("n", "<space>e", vim.diagnostic.open_float, { desc = "LSP: diagnostic float" })
@@ -307,6 +251,11 @@ M.neotest = {
   { "<leader>tS", function() require("neotest").run.stop() end,                    desc = "Test: stop" },
 }
 
+-- bun.tests is incompatible with nvim-treesitter main.
+M.bun = {
+  { "<leader>br", function() require("bun").run_current() end, desc = "Bun: run current file" },
+}
+
 M.dap = {
   { "<F5>",       function() require("dap").continue() end,                                  desc = "DAP: continue / start" },
   { "<F10>",      function() require("dap").step_over() end,                                 desc = "DAP: step over" },
@@ -318,9 +267,7 @@ M.dap = {
   { "<leader>dr", function() require("dap").repl.open() end,                                 desc = "DAP: REPL" },
 }
 
--- ── Treesitter textobject definitions ─────────────────────────────────────────
--- Query bindings consumed by plugins.configs.treesitter, which turns them into
--- explicit nvim-treesitter-textobjects keymaps.
+-- ── Treesitter textobjects ────────────────────────────────────────────────────
 
 M.treesitter_textobjects = {
   select = {

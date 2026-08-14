@@ -1,14 +1,15 @@
--- Visual ergonomics for spatial/pattern-based reading.
---
--- Three layers:
---   1. Sticky context header  — always know which function/class you are inside
---   2. Nesting depth as colour — bracket depth → akko palette hue, no counting
---   3. Skeleton folding        — collapse bodies to see the file's shape
+-- Context, nesting, folding, and log highlighting.
 
 return {
-  -- Structural anchor: enclosing function/class floats at the top of the
-  -- window when scrolled deep into a block. Prevents the "where am I in
-  -- this 300-line function?" context collapse that tanks ADD focus.
+  -- Filetype detection and syntax for plain logs.
+  {
+    "fei6409/log-highlight.nvim",
+    event = "BufReadPre",
+    config = function()
+      require("log-highlight").setup({})
+    end,
+  },
+  -- Keep the enclosing function or class visible.
   {
     "nvim-treesitter/nvim-treesitter-context",
     event = "BufReadPre",
@@ -20,13 +21,7 @@ return {
     },
   },
 
-  -- Each additional nesting level gets the next akko palette hue.
-  -- Structure reads as a colour gradient; you count depth by colour,
-  -- not by scanning for matching brackets.
-  --
-  -- Depth → colour mapping (defined in opts.lua ColorScheme autocmd):
-  --   1 leaf  #72b89e   2 sky  #74a2c0   3 gold   #d09e48
-  --   4 blossom #d4728a  5 cloud #a4bccc  6 frond  #9dc4b8
+  -- Colour delimiters by nesting depth.
   {
     "HiPhish/rainbow-delimiters.nvim",
     event = "BufReadPre",
@@ -48,13 +43,7 @@ return {
     end,
   },
 
-  -- Skeleton folding: collapse every function body to reveal the file's
-  -- structural shape. Provider chain: LSP (precise) → indent.
-  --
-  --   zM — skeleton view (close all)
-  --   zR — full expand (open all)
-  --   zK — peek a fold without committing to it
-  --   za — toggle fold under cursor
+  -- LSP/indent folding with zM, zR, zK, and za.
   {
     "kevinhwang91/nvim-ufo",
     dependencies = { "kevinhwang91/promise-async" },
@@ -68,7 +57,7 @@ return {
         end, desc = "Folds: peek or hover" },
     },
     opts = {
-      -- Fold label: first line + " ⋯ N lines" keeps collapsed blocks informative.
+      -- Include the folded line count.
       fold_virt_text_handler = function(virtText, lnum, endLnum, width, truncate)
         local suffix      = ("  ⋯ %d lines"):format(endLnum - lnum)
         local targetWidth = width - vim.fn.strdisplaywidth(suffix)
@@ -88,9 +77,7 @@ return {
         out[#out + 1] = { suffix, "Comment" }
         return out
       end,
-      -- treesitter excluded: its synchronous parser:parse() conflicts with
-      -- snacks.scope's async parser:parse(range, on_parse) on the same LanguageTree,
-      -- invalidating in-flight trees and producing nil nodes in the async callback.
+      -- Avoid Treesitter's sync parser conflicting with snacks.scope.
       provider_selector = function() return { "lsp", "indent" } end,
     },
     config = function(_, opts)

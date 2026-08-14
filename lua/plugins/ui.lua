@@ -1,6 +1,75 @@
+-- Preserve both ends while fitting a string to n display columns.
+local function middle_ellipsis(s, n)
+  if vim.fn.strdisplaywidth(s) <= n then
+    return s
+  end
+  if n <= 1 then
+    return s:sub(1, math.max(n, 0))
+  end
+  local head = math.ceil((n - 1) / 2)
+  local tail = (n - 1) - head
+  if tail <= 0 then
+    return s:sub(1, head) .. "…"
+  end
+  return s:sub(1, head) .. "…" .. s:sub(-tail)
+end
+
+-- Shorten the longest directory first, preserving informative short components.
+local FLOOR = 1
+local function fit_path(path, budget)
+  if vim.fn.strdisplaywidth(path) <= budget then
+    return path
+  end
+  if budget < 1 then
+    budget = 1
+  end
+
+  local is_abs = path:sub(1, 1) == "/"
+  local parts = vim.split(path, "/", { plain = true, trimempty = false })
+  local filename = table.remove(parts, #parts)
+  local start_idx = is_abs and 2 or 1 -- parts[1] is "" for a leading "/"
+
+  local function total_width()
+    return vim.fn.strdisplaywidth(table.concat(parts, "/") .. "/" .. filename)
+  end
+
+  while total_width() > budget do
+    local over = total_width() - budget
+    local longest_idx, longest_len, second_len = nil, FLOOR, FLOOR
+    for i = start_idx, #parts do
+      local len = vim.fn.strdisplaywidth(parts[i])
+      if len > longest_len then
+        second_len = longest_len
+        longest_idx, longest_len = i, len
+      elseif len > second_len then
+        second_len = len
+      end
+    end
+    if not longest_idx then
+      break -- every directory component is already down to FLOOR
+    end
+    local shrink_by = math.max(1, math.min(over, longest_len - second_len))
+    parts[longest_idx] = middle_ellipsis(parts[longest_idx], math.max(FLOOR, longest_len - shrink_by))
+  end
+
+  local result = table.concat(parts, "/") .. "/" .. filename
+  if vim.fn.strdisplaywidth(result) <= budget then
+    return result
+  end
+
+  -- Shorten the filename last and preserve its extension.
+  local dirs = table.concat(parts, "/") .. "/"
+  local ext = filename:match("%.[^./]+$") or ""
+  local base = filename:sub(1, #filename - #ext)
+  local room = budget - vim.fn.strdisplaywidth(dirs) - #ext
+  if room > 2 then
+    base = middle_ellipsis(base, room)
+  end
+  return dirs .. base .. ext
+end
+
 return {
-  -- ASCII art library — text/neovim category used by the snacks dashboard header.
-  -- nui.nvim is already pulled by noice; lazy.nvim deduplicates it.
+  -- Dashboard ASCII art.
   {
     "MaximilianLloyd/ascii.nvim",
     lazy         = true,
@@ -39,24 +108,47 @@ return {
               trunc_width = 75,
               signs       = { ERROR = "■", WARN = "▲", INFO = "●", HINT = "◆" },
             })
-            -- vim.lsp.status() reads $/progress from all running clients
-            -- (attach=false included). Non-empty only during workspace indexing.
-            local indexing     = vim.lsp.status()
+            -- Show workspace indexing progress when available.
+            local indexing     = vim.lsp.status():gsub("%%", "%%%%")
             local lsp          = indexing ~= "" and indexing or M.section_lsp({ trunc_width = 75 })
-            local fname        = M.section_filename({ trunc_width = 140 })
             local finfo        = M.section_fileinfo({ trunc_width = 120 })
             local location     = M.section_location({ trunc_width = 75 })
             local search       = M.section_searchcount({ trunc_width = 75 })
 
-            return M.combine_groups({
+            local function fname_raw()
+              if vim.bo.buftype == "terminal" then return "%t" end
+              local full = vim.api.nvim_buf_get_name(0)
+              if full == "" then return "[No Name]%m%r" end
+              -- Do not shorten URI-backed buffers.
+              if full:match("^%a+://") then return "%f%m%r" end
+              return { full = vim.fn.fnamemodify(full, ":~") }
+            end
+
+            local groups = {
               { hl = hl,                       strings = { mode } },
               { hl = "MiniStatuslineDevinfo",  strings = { git, diff, diagnostics, lsp } },
               "%<",
-              { hl = "MiniStatuslineFilename", strings = { fname } },
+              { hl = "MiniStatuslineFilename", strings = { "" } },
               "%=",
               { hl = "MiniStatuslineFileinfo", strings = { search, finfo } },
               { hl = hl,                       strings = { location } },
-            })
+            }
+
+            local raw = fname_raw()
+            local fname
+            if type(raw) == "string" then
+              fname = raw
+            else
+              -- Measure each side separately; %= expands to the full window width.
+              local left_width  = vim.api.nvim_eval_statusline(M.combine_groups({ groups[1], groups[2] }), {}).width
+              local right_width = vim.api.nvim_eval_statusline(M.combine_groups({ groups[6], groups[7] }), {}).width
+              local total_width = vim.o.laststatus == 3 and vim.o.columns or vim.api.nvim_win_get_width(0)
+              local budget      = total_width - left_width - right_width - 2 -- 2 = filename group's own leading/trailing space
+              fname = fit_path(raw.full, budget):gsub("%%", "%%%%") .. "%m%r"
+            end
+            groups[4] = { hl = "MiniStatuslineFilename", strings = { fname } }
+
+            return M.combine_groups(groups)
           end,
         },
       }
@@ -93,8 +185,7 @@ return {
         separator  = "▪",
         group      = "▸ ",
       },
-      -- Suppress diffview's internal keymaps from the popup.
-      -- diffview tags them diffview_ignore deliberately; g? is its own help system.
+      -- Diffview provides its own g? help.
       filter = function(mapping)
         return mapping.desc ~= "diffview_ignore"
       end,
@@ -110,8 +201,7 @@ return {
       bigfile      = { enabled = true },
       dashboard = {
         enabled  = true,
-        -- sections is a function so ascii.nvim is required at render time
-        -- (not at plugin-spec evaluation time), giving a random art on every open.
+        -- Load random ASCII art at render time.
         sections = function()
           local ok, art = pcall(require, "ascii")
           local header  = ok
@@ -139,18 +229,12 @@ return {
       picker = {
         enabled = true,
         sources = {
-          -- ivy = full-width bottom strip; description column no longer truncated
-          -- preview = false: preview panel was eating ~50% of width, truncating descriptions.
-          -- ivy layout uses full terminal width for the list.
+          -- Full-width keymap descriptions without a preview pane.
           keymaps = { preview = false, layout = { preset = "ivy" } },
 
-          -- Stacked vertical: list on top (full terminal width → paths never clip),
-          -- preview on bottom. Mirrors the user story: type a substring, scan
-          -- the full qualified path, preview the definition site.
+          -- Full-width symbol list above its preview.
           lsp_workspace_symbols = {
-            -- Outer table = layout config object (matches the shape presets use).
-            -- Inner table = the actual root box definition; without this wrapping
-            -- Snacks' resolver cannot find layout.layout[1] and asserts "no root box found".
+            -- Snacks expects the root box at layout.layout[1].
             layout = {
               layout = {
                 box       = "vertical",

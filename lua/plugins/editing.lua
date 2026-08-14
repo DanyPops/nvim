@@ -14,7 +14,15 @@ return {
 
   {
     "stevearc/oil.nvim",
-    opts         = {},
+    opts = {
+      columns = {
+        "icon",
+        "permissions",
+        "size",
+        { "mtime", format = "%Y-%m-%d %H:%M" },
+      },
+      view_options = { show_hidden = true },
+    },
     dependencies = { "nvim-tree/nvim-web-devicons" },
   },
 

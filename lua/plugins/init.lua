@@ -9,14 +9,14 @@ end
 require("lazy").setup(
   merge {
     require "plugins.colorscheme",
-    require "plugins.ui",
-    require "plugins.git",
-    require "plugins.lsp",
-    require "plugins.visual",
     require "plugins.editing",
-    require "plugins.languages.go",
+    require "plugins.git",
+    require "plugins.languages.javascript",
     require "plugins.languages.rust",
     require "plugins.languages.testing",
+    require "plugins.lsp",
+    require "plugins.ui",
+    require "plugins.visual",
   },
   require "plugins.configs.lazy"
 )

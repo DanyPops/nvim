@@ -99,8 +99,8 @@ local theme = lush(function(injected_functions)
     CursorLineNr   { bg = bg2,      fg = blossom, bold = true },
 
     -- Selection
-    Visual         { bg = bg3 },
-    VisualNOS      { bg = bg3 },
+    Visual         { bg = bloom, fg = bg0, bold = true },
+    VisualNOS      { bg = bloom, fg = bg0, bold = true },
 
     -- UI chrome
     LineNr         { fg = txt3 },
