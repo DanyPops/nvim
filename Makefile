@@ -6,10 +6,8 @@ test: deps/mini.nvim
 	  -u tests/scripts/minimal_init.lua \
 	  -c "lua MiniTest.run({ execute = { reporter = MiniTest.gen_reporter.stdout({ group_depth = 1 }) } })"
 
-# Smoke: load the real config with plugins, open a real file, move the cursor
-# (triggers CursorMoved → snacks.scope, treesitter-context, rainbow-delimiters),
-# then collect any errors. Headless does not fire UI events, so we drive them
-# explicitly via vim.api.nvim_input after plugin startup settles.
+# Smoke: load plugins, move the cursor, close folds, and collect errors.
+# Headless needs explicit input after plugin startup settles.
 SMOKE_SCRIPT := $(shell mktemp /tmp/nvim-smoke-XXXXXX.lua)
 smoke:
 	@printf '%s\n' \
@@ -24,7 +22,7 @@ smoke:
 	  'vim.defer_fn(function()' \
 	  '  vim.cmd("edit /tmp/nvim-smoke-test.rs")' \
 	  '  vim.defer_fn(function()' \
-	  '    vim.api.nvim_input("Gjkjkjk")' \
+	  '    vim.api.nvim_input("GzMjkjkjk")' \
 	  '    vim.defer_fn(function() vim.cmd("qa!") end, 2000)' \
 	  '  end, 2000)' \
 	  'end, 3000)' > $(SMOKE_SCRIPT)

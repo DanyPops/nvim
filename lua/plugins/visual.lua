@@ -47,7 +47,8 @@ return {
   {
     "kevinhwang91/nvim-ufo",
     dependencies = { "kevinhwang91/promise-async" },
-    event        = "BufReadPre",
+    -- BufReadPre lets UFO cache the temporary one-line buffer before file load.
+    event        = "BufReadPost",
     keys = {
       { "zR", function() require("ufo").openAllFolds() end,  desc = "Folds: open all" },
       { "zM", function() require("ufo").closeAllFolds() end, desc = "Folds: skeleton view" },
