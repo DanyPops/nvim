@@ -15,6 +15,7 @@ require("lazy").setup(
     require "plugins.languages.rust",
     require "plugins.languages.testing",
     require "plugins.lsp",
+    require "plugins.metrics",
     require "plugins.ui",
     require "plugins.visual",
   },
