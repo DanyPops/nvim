@@ -26,6 +26,24 @@ return {
     dependencies = { "nvim-tree/nvim-web-devicons" },
   },
 
+  {
+    "dhananjaylatkar/cscope_maps.nvim",
+    ft           = { "c", "cpp" },
+    dependencies = { "folke/snacks.nvim" },
+    opts = {
+      -- Keep the existing <leader>c mappings for LSP/Trouble.
+      prefix = "<leader>C",
+      cscope = {
+        picker       = "snacks",
+        db_build_cmd = { script = "default", args = { "-Rbqkv" } },
+        project_rooter = {
+          enable     = true,
+          change_cwd = false,
+        },
+      },
+    },
+  },
+
   -- Project-wide search + replace with human-in-the-loop preview.
   -- Pi proposes changes; human reviews every match before anything is written.
   {

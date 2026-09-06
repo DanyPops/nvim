@@ -1,4 +1,4 @@
-local km = require("config.keymaps")
+local km = require "config.keymaps"
 
 return {
   -- Rust: rustaceanvim.neotest (LSP-based discovery, no extra plugin needed).
@@ -12,12 +12,12 @@ return {
       "nvim-neotest/neotest-go",
     },
     config = function()
-      require("neotest").setup({
+      require("neotest").setup {
         adapters = {
-          require("neotest-go"),
-          require("rustaceanvim.neotest"),
+          require "neotest-go",
+          require "rustaceanvim.neotest",
         },
-      })
+      }
     end,
     keys = km.neotest,
   },
@@ -31,15 +31,42 @@ return {
       "leoluz/nvim-dap-go",
     },
     config = function()
-      local dap   = require("dap")
-      local dapui = require("dapui")
+      local dap = require "dap"
+      local dapui = require "dapui"
+
+      dap.adapters.gdb = {
+        type = "executable",
+        command = "gdb",
+        args = { "--quiet", "--interpreter=dap" },
+      }
+
+      dap.configurations.c = {
+        {
+          name = "Launch executable with GDB",
+          type = "gdb",
+          request = "launch",
+          program = function()
+            return vim.fn.input("Executable: ", vim.fn.getcwd() .. "/", "file")
+          end,
+          cwd = "${workspaceFolder}",
+          stopAtBeginningOfMainSubprogram = false,
+        },
+      }
+
+      dap.configurations.cpp = dap.configurations.c
 
       dapui.setup()
       require("dap-go").setup()
 
-      dap.listeners.after.event_initialized["dapui_config"]  = function() dapui.open() end
-      dap.listeners.before.event_terminated["dapui_config"]  = function() dapui.close() end
-      dap.listeners.before.event_exited["dapui_config"]      = function() dapui.close() end
+      dap.listeners.after.event_initialized["dapui_config"] = function()
+        dapui.open()
+      end
+      dap.listeners.before.event_terminated["dapui_config"] = function()
+        dapui.close()
+      end
+      dap.listeners.before.event_exited["dapui_config"] = function()
+        dapui.close()
+      end
     end,
     keys = km.dap,
   },
