@@ -97,7 +97,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     -- Distinguish the sticky Treesitter context header.
     vim.api.nvim_set_hl(0, "TreesitterContext",           { bg = "#261a20" })
     vim.api.nvim_set_hl(0, "TreesitterContextLineNumber", { bg = "#261a20", fg = "#a29098" })
-    vim.api.nvim_set_hl(0, "TreesitterContextSeparator",  { fg = "#4e3a44" })
+    vim.api.nvim_set_hl(0, "TreesitterContextSeparator",  { fg = "#9a6e7d" })
   end,
 })
 

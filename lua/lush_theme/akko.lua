@@ -24,7 +24,7 @@ local theme = lush(function(injected_functions)
   local bg1 = hsl(342, 28, 10)   -- #1c1117  editor background
   local bg2 = hsl(342, 24, 14)   -- #261a20  popups / floats
   local bg3 = hsl(342, 20, 19)   -- #342428  selection
-  local bg4 = hsl(340, 16, 28)   -- #4e3a44  borders, dimmed UI chrome
+  local bg4 = hsl("#9a6e7d")     -- shared Akko dim purple — borders, dimmed UI chrome
 
   -- ── Text ────────────────────────────────────────────────────────────────
   -- Warm off-whites with a faint pink tint (tinted by the blossom hue)
@@ -55,7 +55,7 @@ local theme = lush(function(injected_functions)
   -- For UI chrome that was using bg4 (L=28) as fg — too dark on transparent bg.
   -- Borders, indent guides, separators: needs to be visible but still subtle.
 
-  local dim = hsl(340, 18, 52)    -- #8e6878  subtle UI chrome (was bg4 at L=28)
+  local dim = hsl("#9a6e7d")     -- shared Akko dim purple — subtle UI chrome
 
   -- ── Sky ─────────────────────────────────────────────────────────────────
   -- H≈207  Muted steel-blue from the overcast sky background.
